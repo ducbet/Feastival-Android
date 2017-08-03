@@ -32,6 +32,8 @@
                 android:layout_marginLeft="@dimen/dp_10"
                 android:layout_marginStart="@dimen/dp_10"
                 android:contentDescription="@string/content_description"
+                android:onClick="@{(view) -> viewModel.changeStateBottomSheet(view)}"
+                android:src="@drawable/ic_keyboard_arrow_up_white_24px"
                 />
 
             <LinearLayout

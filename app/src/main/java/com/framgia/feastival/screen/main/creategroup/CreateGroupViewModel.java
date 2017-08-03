@@ -2,8 +2,12 @@ package com.framgia.feastival.screen.main.creategroup;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.framgia.feastival.BR;
+import com.framgia.feastival.R;
 import com.framgia.feastival.data.source.model.Group;
 import com.framgia.feastival.data.source.model.Restaurant;
 import com.framgia.feastival.screen.BaseViewModel;
@@ -110,6 +114,22 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
     public void onHaveFieldInvalid(int errorCode) {
         ((MainViewModel) mBaseViewModel).onGetNewGroupFailed(
             ((MainViewModel) mBaseViewModel).getContext().getString(errorCode));
+    }
+
+    @Override
+    public void changeStateBottomSheet(View view) {
+        BottomSheetBehavior<View> bottomSheetBehavior =
+            ((MainViewModel) mBaseViewModel).getBottomSheetBehavior();
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            ((ImageView) view).setImageResource(R.drawable.ic_keyboard_arrow_up_white_24px);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            return;
+        }
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            ((ImageView) view).setImageResource(R.drawable.ic_keyboard_arrow_down_white_24px);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            return;
+        }
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.framgia.feastival.screen.main.creategroup;
 
+import android.view.View;
+
 import com.framgia.feastival.screen.BasePresenter;
 import com.framgia.feastival.screen.BaseViewModel;
 
@@ -16,6 +18,7 @@ public class CreateGroupContract {
         void onCancelClick();
         void onValidateSuccess();
         void onHaveFieldInvalid(int errorCode);
+        void changeStateBottomSheet(View view);
     }
 
     /**
