@@ -96,4 +96,64 @@ public class Group {
     public String getUpdateAt() {
         return mUpdateAt;
     }
+
+    public void setId(int id) {
+        mId = id;
+    }
+
+    public void setCategoryId(int categoryId) {
+        mCategoryId = categoryId;
+    }
+
+    public void setRestaurantId(int restaurantId) {
+        mRestaurantId = restaurantId;
+    }
+
+    public void setCreatorId(int creatorId) {
+        mCreatorId = creatorId;
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
+    }
+
+    public void setTime(String time) {
+        mTime = time;
+    }
+
+    public void setAddress(String address) {
+        mAddress = address;
+    }
+
+    public void setLatitude(float latitude) {
+        mLatitude = latitude;
+    }
+
+    public void setLongtitude(float longtitude) {
+        mLongtitude = longtitude;
+    }
+
+    public void setSize(int size) {
+        mSize = size;
+    }
+
+    public void setStatus(boolean status) {
+        mStatus = status;
+    }
+
+    public void setCompleted(boolean completed) {
+        mCompleted = completed;
+    }
+
+    public void setDescription(String description) {
+        mDescription = description;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        mCreatedAt = createdAt;
+    }
+
+    public void setUpdateAt(String updateAt) {
+        mUpdateAt = updateAt;
+    }
 }

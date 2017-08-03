@@ -38,6 +38,7 @@ public class BindingUtil {
         View mView;
         rootLiear.removeAllViews();
         LayoutInflater layoutInflater = LayoutInflater.from(mainViewModel.getContext());
+        View bottomSheet = mainViewModel.getBottomSheet();
         switch (mainViewModel.getState()) {
             case STATE_SHOW_RESTAURANT_DETAIL:
                 FrameRestaurantDetailBinding restaurantDetailBinding =
