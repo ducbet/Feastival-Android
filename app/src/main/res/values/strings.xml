@@ -26,6 +26,8 @@
     <string name="enter_group_name">Enter Group Name</string>
     <string name="email_address">Email Address</string>
     <string name="address">Address:</string>
+    <string name="enter_group_address">Enter Group Address</string>
+    <string name="time">Time:</string>
     <string name="size">Size:</string>
     <string name="size_group">Number Member</string>
     <string name="category">Category:</string>
@@ -34,6 +36,9 @@
     <string name="cancel">Cancel</string>
     <string name="field_name_empty">Field name empty</string>
     <string name="field_address_empty">Field address empty</string>
+    <string name="field_time_not_match">Field time not match the format</string>
+    <string name="field_time_empty">Field time empty</string>
     <string name="field_size_empty">Field size empty</string>
+    <string name="field_size_cant_negative">Field size can\'t negative</string>
     <string name="field_category_empty">Field category empty</string>
 </resources>

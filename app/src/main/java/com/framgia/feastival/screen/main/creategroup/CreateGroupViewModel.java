@@ -22,6 +22,7 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
     private Restaurant mSelectedRestaurant;
     private String mName;
     private String mAddress;
+    private String mTime;
     private String mSize;
     private String mCategory;
 
@@ -41,6 +42,11 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
     @Bindable
     public String getAddress() {
         return mAddress;
+    }
+
+    @Bindable
+    public String getTime() {
+        return mTime;
     }
 
     @Bindable
@@ -73,6 +79,11 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
         notifyPropertyChanged(BR.address);
     }
 
+    public void setTime(String time) {
+        mTime = time;
+        notifyPropertyChanged(BR.time);
+    }
+
     public void setSize(String size) {
         mSize = size;
         notifyPropertyChanged(BR.size);
@@ -85,7 +96,7 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
 
     @Override
     public void onGetNewGroup() {
-        mPresenter.checkValid(mName, mAddress, mSize, mCategory);
+        mPresenter.checkValid(mName, mAddress, mTime, mSize, mCategory);
     }
 
     @Override
@@ -103,16 +114,17 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
         Group newGroup = new Group();
         newGroup.setRestaurantId(mSelectedRestaurant.getId());
         newGroup.setTitle(mName);
+        newGroup.setTime(mTime);
         newGroup.setAddress(mSelectedRestaurant.getAddress());
         newGroup.setLatitude(mSelectedRestaurant.getLatitude());
         newGroup.setLongtitude(mSelectedRestaurant.getLongtitude());
         newGroup.setSize(Integer.parseInt(mSize));
-        ((MainViewModel) mBaseViewModel).onGetNewGroupSuccess(newGroup);
+        ((MainViewModel) mBaseViewModel).onGetNewGroupLocalSuccess(newGroup);
     }
 
     @Override
     public void onHaveFieldInvalid(int errorCode) {
-        ((MainViewModel) mBaseViewModel).onGetNewGroupFailed(
+        ((MainViewModel) mBaseViewModel).onGetNewGroupLocalFailed(
             ((MainViewModel) mBaseViewModel).getContext().getString(errorCode));
     }
 
