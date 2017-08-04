@@ -11,12 +11,15 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
+import android.widget.Toast;
 
 import com.framgia.feastival.R;
 import com.framgia.feastival.data.source.model.Group;
 import com.framgia.feastival.data.source.model.Restaurant;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
 import com.framgia.feastival.screen.BaseActivity;
+import com.framgia.feastival.screen.main.creategroup.CreateGroupContract;
+import com.framgia.feastival.screen.main.creategroup.CreateGroupPresenter;
 import com.framgia.feastival.screen.main.creategroup.CreateGroupViewModel;
 import com.framgia.feastival.screen.main.restaurantdetail.RestaurantDetailViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -73,7 +76,8 @@ public class MainViewModel extends BaseObservable
         };
     private RestaurantDetailViewModel mRestaurantDetailViewModel =
         new RestaurantDetailViewModel(this);
-    private CreateGroupViewModel mCreateGroupViewModel = new CreateGroupViewModel(this);
+    private CreateGroupViewModel mCreateGroupViewModel;
+    private CreateGroupContract.Presenter mCreateGroupPresenter;
 
     public RestaurantDetailViewModel getRestaurantDetailViewModel() {
         return mRestaurantDetailViewModel;
@@ -89,6 +93,9 @@ public class MainViewModel extends BaseObservable
         mGroupsMarker = new ArrayList<>();
         mViewPointMarker = new ArrayList<>();
         setState(STATE_SHOW_RESTAURANT_DETAIL);
+        mCreateGroupViewModel = new CreateGroupViewModel(this);
+        mCreateGroupPresenter = new CreateGroupPresenter(mCreateGroupViewModel);
+        mCreateGroupViewModel.setPresenter(mCreateGroupPresenter);
     }
 
     public Context getContext() {
@@ -114,6 +121,14 @@ public class MainViewModel extends BaseObservable
         }
         mState = state;
         notifyChange();
+    }
+
+    public BottomSheetBehavior<View> getBottomSheetBehavior() {
+        return mBottomSheetBehavior;
+    }
+
+    public View getBottomSheet() {
+        return mBottomSheet;
     }
 
     private void zoomInMyPositonAutomaticly() {
@@ -228,6 +243,9 @@ public class MainViewModel extends BaseObservable
     }
 
     private void markNearbyRestaurants(RestaurantsResponse restaurantsResponse) {
+        for (Marker marker : mRestaurantsMarker) {
+            marker.remove();
+        }
         mRestaurantsMarker.clear();
         for (Restaurant restaurant : restaurantsResponse.getRestaurants()) {
             Marker marker = mMap.addMarker(new MarkerOptions()
@@ -241,6 +259,9 @@ public class MainViewModel extends BaseObservable
     }
 
     private void markNearbyGroups(RestaurantsResponse restaurantsResponse) {
+        for (Marker marker : mGroupsMarker) {
+            marker.remove();
+        }
         mGroupsMarker.clear();
         for (Group group : restaurantsResponse.getGroups()) {
             Marker marker = mMap.addMarker(new MarkerOptions()
@@ -326,6 +347,24 @@ public class MainViewModel extends BaseObservable
 
     @Override
     public void onGetRestaurantsFailed(Throwable e) {
+        Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onGetNewGroupSuccess(Group group) {
+// TODO: 04/08/2017  
+    }
+
+    @Override
+    public void onGetNewGroupFailed(String e) {
+        Toast.makeText(mContext, e, Toast.LENGTH_LONG).show();
+    }
+
+    public void onGetNewGroup() {
+        if (mCreateGroupViewModel == null) {
+            return;
+        }
+        mCreateGroupViewModel.onGetNewGroup();
     }
 
     @Override

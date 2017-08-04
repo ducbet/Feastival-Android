@@ -1,5 +1,6 @@
 package com.framgia.feastival.screen.main;
 
+import com.framgia.feastival.data.source.model.Group;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
 import com.framgia.feastival.screen.BasePresenter;
 import com.framgia.feastival.screen.BaseViewModel;
@@ -17,6 +18,8 @@ public interface MainContract {
         void setMapFragment(SupportMapFragment mapFragment);
         void onGetRestaurantsSuccess(RestaurantsResponse restaurantsResponse);
         void onGetRestaurantsFailed(Throwable e);
+        void onGetNewGroupSuccess(Group group);
+        void onGetNewGroupFailed(String e);
     }
 
     /**

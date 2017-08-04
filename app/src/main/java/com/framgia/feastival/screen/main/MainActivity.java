@@ -12,9 +12,9 @@ import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import com.framgia.feastival.R;
-import com.framgia.feastival.databinding.ActivityMainBinding;
 import com.framgia.feastival.data.source.RestaurantRepository;
 import com.framgia.feastival.data.source.remote.RestaurantRemoteDataSource;
+import com.framgia.feastival.databinding.ActivityMainBinding;
 import com.framgia.feastival.screen.BaseActivity;
 import com.google.android.gms.maps.SupportMapFragment;
 

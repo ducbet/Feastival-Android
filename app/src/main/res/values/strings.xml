@@ -21,4 +21,19 @@
     <string name="content_description">contentDescription</string>
     <string name="title_enter_message">Enter message</string>
     <string name="groups">Groups</string>
+    <string name="create_group">Create Group</string>
+    <string name="name">Name:</string>
+    <string name="enter_group_name">Enter Group Name</string>
+    <string name="email_address">Email Address</string>
+    <string name="address">Address:</string>
+    <string name="size">Size:</string>
+    <string name="size_group">Number Member</string>
+    <string name="category">Category:</string>
+    <string name="category_group">Category Group</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
+    <string name="field_name_empty">Field name empty</string>
+    <string name="field_address_empty">Field address empty</string>
+    <string name="field_size_empty">Field size empty</string>
+    <string name="field_category_empty">Field category empty</string>
 </resources>
