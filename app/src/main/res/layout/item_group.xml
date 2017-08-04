@@ -16,6 +16,7 @@
                   android:layout_height="wrap_content"
                   android:layout_margin="@dimen/dp_5"
                   android:background="@android:color/holo_blue_bright"
+                  android:onClick="@{() -> viewModel.onClickExistGroup(group)}"
                   android:orientation="vertical">
 
         <com.framgia.feastival.util.widget.SquareImageView
