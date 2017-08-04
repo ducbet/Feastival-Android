@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.framgia.feastival.R;
+import com.framgia.feastival.data.source.model.CategoriesResponse;
 import com.framgia.feastival.data.source.model.Group;
 import com.framgia.feastival.data.source.model.Restaurant;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
@@ -311,6 +312,7 @@ public class MainViewModel extends BaseObservable
     public void onStart() {
         mMapFragment.getMapAsync(this);
         mPresenter.onStart();
+        mPresenter.getCategories();
         createBottomSheet();
     }
 
@@ -346,7 +348,12 @@ public class MainViewModel extends BaseObservable
     }
 
     @Override
-    public void onGetRestaurantsFailed(Throwable e) {
+    public void onGetCategoriesSuccess(CategoriesResponse categoriesResponse) {
+        // TODO: 06/08/2017  
+    }
+
+    @Override
+    public void onGetFailed(Throwable e) {
         Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
     }
 
