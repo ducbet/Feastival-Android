@@ -2,4 +2,6 @@
 <resources>
     <integer name="max_lines">3</integer>
     <integer name="span_count">4</integer>
+    <integer name="bottom_sheet_expand_restaurant_detail">1000</integer>
+    <integer name="bottom_sheet_expand_create_group">1400</integer>
 </resources>

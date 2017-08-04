@@ -1,8 +1,9 @@
 package com.framgia.feastival.util;
 
 import android.databinding.BindingAdapter;
-
 import android.databinding.DataBindingUtil;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,28 +34,38 @@ public class BindingUtil {
         ViewGroup.LayoutParams.MATCH_PARENT);
 
     @BindingAdapter("state")
-    public static void setBottomSheetState(LinearLayout rootLiear, MainViewModel
+    public static void setBottomSheetState(CoordinatorLayout rootCoordinate, MainViewModel
         mainViewModel) {
         View mView;
-        rootLiear.removeAllViews();
+        rootCoordinate.removeAllViews();
         LayoutInflater layoutInflater = LayoutInflater.from(mainViewModel.getContext());
         View bottomSheet = mainViewModel.getBottomSheet();
         switch (mainViewModel.getState()) {
             case STATE_SHOW_RESTAURANT_DETAIL:
                 FrameRestaurantDetailBinding restaurantDetailBinding =
                     DataBindingUtil.inflate(layoutInflater, R.layout
-                        .frame_restaurant_detail, rootLiear, false);
+                        .frame_restaurant_detail, rootCoordinate, false);
                 restaurantDetailBinding.setViewModel(mainViewModel.getRestaurantDetailViewModel());
                 mView = restaurantDetailBinding.getRoot();
-                rootLiear.addView(mView, mParams);
+                bottomSheet.getLayoutParams().height = mainViewModel.getContext().getResources()
+                    .getInteger(R.integer.bottom_sheet_expand_restaurant_detail);
+                bottomSheet.requestLayout();
+                mainViewModel.getBottomSheetBehavior().onLayoutChild(rootCoordinate, bottomSheet,
+                    ViewCompat.LAYOUT_DIRECTION_LTR);
+                rootCoordinate.addView(mView, mParams);
                 break;
             case STATE_CREATE_GROUP:
                 FrameGroupCreateBinding createGroupBinding =
                     DataBindingUtil.inflate(layoutInflater, R.layout
-                        .frame_group_create, rootLiear, false);
+                        .frame_group_create, rootCoordinate, false);
                 createGroupBinding.setViewModel(mainViewModel.getCreateGroupViewModel());
                 mView = createGroupBinding.getRoot();
-                rootLiear.addView(mView, mParams);
+                bottomSheet.getLayoutParams().height = mainViewModel.getContext().getResources()
+                    .getInteger(R.integer.bottom_sheet_expand_create_group);
+                bottomSheet.requestLayout();
+                mainViewModel.getBottomSheetBehavior().onLayoutChild(rootCoordinate, bottomSheet,
+                    ViewCompat.LAYOUT_DIRECTION_LTR);
+                rootCoordinate.addView(mView, mParams);
                 break;
             case STATE_SHOW_GROUP_DETAIL:
                 // TODO: 02/08/2017
