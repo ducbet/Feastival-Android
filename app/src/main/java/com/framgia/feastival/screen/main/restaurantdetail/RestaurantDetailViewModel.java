@@ -4,10 +4,8 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.framgia.feastival.BR;
-import com.framgia.feastival.R;
 import com.framgia.feastival.data.source.model.Restaurant;
 import com.framgia.feastival.screen.BaseViewModel;
 import com.framgia.feastival.screen.main.MainViewModel;
@@ -19,6 +17,17 @@ public class RestaurantDetailViewModel extends BaseObservable {
     private BaseViewModel mBaseViewModel;
     private Restaurant mSelectedRestaurant;
     private RestaurantsGroupsAdapter mRestaurantsGroupsAdapter;
+    private int mState;
+
+    @Bindable
+    public int getState() {
+        return mState;
+    }
+
+    public void setState(int state) {
+        mState = state;
+        notifyPropertyChanged(BR.state);
+    }
 
     public RestaurantDetailViewModel(MainViewModel mainViewModel) {
         mBaseViewModel = mainViewModel;
@@ -40,17 +49,17 @@ public class RestaurantDetailViewModel extends BaseObservable {
         return mRestaurantsGroupsAdapter;
     }
 
-    public void changeStateBottomSheet(View view) {
+    public void changeStateBottomSheet() {
         BottomSheetBehavior<View> bottomSheetBehavior =
             ((MainViewModel) mBaseViewModel).getBottomSheetBehavior();
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            ((ImageView) view).setImageResource(R.drawable.ic_keyboard_arrow_up_white_24px);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            mState = BottomSheetBehavior.STATE_COLLAPSED;
+            ((MainViewModel) mBaseViewModel).setBottomSheetState(mState);
             return;
         }
         if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-            ((ImageView) view).setImageResource(R.drawable.ic_keyboard_arrow_down_white_24px);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            mState = BottomSheetBehavior.STATE_EXPANDED;
+            ((MainViewModel) mBaseViewModel).setBottomSheetState(mState);
             return;
         }
     }
