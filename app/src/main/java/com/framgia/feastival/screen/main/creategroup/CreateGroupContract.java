@@ -25,6 +25,6 @@ public class CreateGroupContract {
      * Presenter.
      */
     public interface Presenter extends BasePresenter {
-        void checkValid(String name, String address, String time, String size, String category);
+        void checkValid(String name, String address, String time, String size);
     }
 }

@@ -8,7 +8,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
 import com.framgia.feastival.R;
 import com.framgia.feastival.databinding.FrameGroupCreateBinding;
@@ -71,5 +73,10 @@ public class BindingUtil {
                 // TODO: 02/08/2017
                 break;
         }
+    }
+
+    @BindingAdapter("spinnerAdapter")
+    public static void setSourceSpinner(Spinner spinner, ArrayAdapter<String> spinnerAdapter) {
+        spinner.setAdapter(spinnerAdapter);
     }
 }

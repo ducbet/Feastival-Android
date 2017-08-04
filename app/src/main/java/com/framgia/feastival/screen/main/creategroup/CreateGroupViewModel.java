@@ -4,14 +4,19 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.framgia.feastival.BR;
 import com.framgia.feastival.R;
+import com.framgia.feastival.data.source.model.Category;
 import com.framgia.feastival.data.source.model.Group;
 import com.framgia.feastival.data.source.model.Restaurant;
 import com.framgia.feastival.screen.BaseViewModel;
 import com.framgia.feastival.screen.main.MainViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by thanh.tv on 8/2/2017.
@@ -24,10 +29,31 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
     private String mAddress;
     private String mTime;
     private String mSize;
-    private String mCategory;
+    private List<Category> mListCategories;
+    private ArrayAdapter<String> mSpinnerAdapter;
 
     public CreateGroupViewModel(MainViewModel mainViewModel) {
         mBaseViewModel = mainViewModel;
+        mListCategories = new ArrayList<>();
+        setSpinnerAdapter();
+    }
+
+    @Bindable
+    public ArrayAdapter<String> getSpinnerAdapter() {
+        return mSpinnerAdapter;
+    }
+
+    public void setSpinnerAdapter() {
+        List<String> categoriesName = new ArrayList<>();
+        for (Category category : mListCategories) {
+            categoriesName.add(category.getName());
+        }
+        mSpinnerAdapter = new ArrayAdapter<String>(
+            ((MainViewModel) mBaseViewModel).getContext(),
+            android.R.layout.simple_spinner_item,
+            categoriesName);
+        mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        notifyPropertyChanged(BR.spinnerAdapter);
     }
 
     public Restaurant getSelectedRestaurant() {
@@ -52,11 +78,6 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
     @Bindable
     public String getSize() {
         return mSize;
-    }
-
-    @Bindable
-    public String getCategory() {
-        return mCategory;
     }
 
     public void setBaseViewModel(BaseViewModel baseViewModel) {
@@ -89,14 +110,20 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
         notifyPropertyChanged(BR.size);
     }
 
-    public void setCategory(String category) {
-        mCategory = category;
-        notifyPropertyChanged(BR.category);
+    @Bindable
+    public List<Category> getListCategories() {
+        return mListCategories;
+    }
+
+    public void setListCategories(List<Category> listCategories) {
+        mListCategories = listCategories;
+        notifyPropertyChanged(BR.listCategories);
+        setSpinnerAdapter();
     }
 
     @Override
     public void onGetNewGroup() {
-        mPresenter.checkValid(mName, mAddress, mTime, mSize, mCategory);
+        mPresenter.checkValid(mName, mAddress, mTime, mSize);
     }
 
     @Override
