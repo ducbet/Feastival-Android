@@ -2,7 +2,9 @@ package com.framgia.feastival.screen.main;
 
 import android.location.Location;
 
+import com.framgia.feastival.data.source.CategoryDataSource;
 import com.framgia.feastival.data.source.RestaurantDataSource;
+import com.framgia.feastival.data.source.model.CategoriesResponse;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -21,12 +23,15 @@ final class MainPresenter implements MainContract.Presenter {
     private static final String TAG = MainPresenter.class.getName();
     private final MainContract.ViewModel mViewModel;
     private RestaurantDataSource mRestaurantRepository;
+    private CategoryDataSource mCategoryRepository;
     private CompositeDisposable mCompositeDisposable;
 
     public MainPresenter(MainContract.ViewModel viewModel,
-                         RestaurantDataSource restaurantRepository) {
+                         RestaurantDataSource restaurantRepository,
+                         CategoryDataSource categoryRepository) {
         mViewModel = viewModel;
         mRestaurantRepository = restaurantRepository;
+        mCategoryRepository = categoryRepository;
         mCompositeDisposable = new CompositeDisposable();
     }
 
@@ -52,7 +57,7 @@ final class MainPresenter implements MainContract.Presenter {
 
                 @Override
                 public void onError(@NonNull Throwable e) {
-                    mViewModel.onGetRestaurantsFailed(e);
+                    mViewModel.onGetFailed(e);
                 }
 
                 @Override
@@ -75,7 +80,30 @@ final class MainPresenter implements MainContract.Presenter {
 
                 @Override
                 public void onError(@NonNull Throwable e) {
-                    mViewModel.onGetRestaurantsFailed(e);
+                    mViewModel.onGetFailed(e);
+                }
+
+                @Override
+                public void onComplete() {
+                }
+            });
+        mCompositeDisposable.add(disposable);
+    }
+
+    @Override
+    public void getCategories() {
+        Disposable disposable = mCategoryRepository.getCategories()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith(new DisposableObserver<CategoriesResponse>() {
+                @Override
+                public void onNext(@NonNull CategoriesResponse response) {
+                    mViewModel.onGetCategoriesSuccess(response);
+                }
+
+                @Override
+                public void onError(@NonNull Throwable e) {
+                    mViewModel.onGetFailed(e);
                 }
 
                 @Override

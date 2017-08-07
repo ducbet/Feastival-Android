@@ -1,5 +1,6 @@
 package com.framgia.feastival.data.service;
 
+import com.framgia.feastival.data.source.model.CategoriesResponse;
 import com.framgia.feastival.data.source.model.LoginResponse;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
 
@@ -21,4 +22,6 @@ public interface FeastivalService {
     @POST("sign_in")
     Observable<LoginResponse> logIn(@Query("sign_in[email]") String email, @Query
         ("sign_in[password]") String password);
+    @GET("categories")
+    Observable<CategoriesResponse> getCategories();
 }

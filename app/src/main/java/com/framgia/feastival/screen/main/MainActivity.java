@@ -12,7 +12,9 @@ import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import com.framgia.feastival.R;
+import com.framgia.feastival.data.source.CategoryRepository;
 import com.framgia.feastival.data.source.RestaurantRepository;
+import com.framgia.feastival.data.source.remote.CategoryRemoteDataSource;
 import com.framgia.feastival.data.source.remote.RestaurantRemoteDataSource;
 import com.framgia.feastival.databinding.ActivityMainBinding;
 import com.framgia.feastival.screen.BaseActivity;
@@ -34,7 +36,9 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         mViewModel = new MainViewModel(this);
         MainContract.Presenter presenter =
-            new MainPresenter(mViewModel, new RestaurantRepository(new RestaurantRemoteDataSource()));
+            new MainPresenter(mViewModel,
+                new RestaurantRepository(new RestaurantRemoteDataSource()),
+                new CategoryRepository(new CategoryRemoteDataSource()));
         mViewModel.setPresenter(presenter);
         ActivityMainBinding binding =
             DataBindingUtil.setContentView(this, R.layout.activity_main);
