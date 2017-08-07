@@ -30,7 +30,7 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
     }
 
     @Override
-    public void checkValid(String name, String address, String time, String size, String category) {
+    public void checkValid(String name, String address, String time, String size) {
         if (name == null || name.trim().isEmpty()) {
             mViewModel.onHaveFieldInvalid(R.string.field_name_empty);
             return;
@@ -59,10 +59,8 @@ public class CreateGroupPresenter implements CreateGroupContract.Presenter {
             mViewModel.onHaveFieldInvalid(R.string.field_size_cant_negative);
             return;
         }
-        if (category == null || category.trim().isEmpty()) {
-            mViewModel.onHaveFieldInvalid(R.string.field_category_empty);
-            return;
-        }
         mViewModel.onValidateSuccess();
     }
+
+
 }

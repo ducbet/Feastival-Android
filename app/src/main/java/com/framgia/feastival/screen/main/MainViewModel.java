@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.framgia.feastival.R;
 import com.framgia.feastival.data.source.model.CategoriesResponse;
+import com.framgia.feastival.data.source.model.Category;
 import com.framgia.feastival.data.source.model.Group;
 import com.framgia.feastival.data.source.model.Restaurant;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
@@ -79,6 +80,7 @@ public class MainViewModel extends BaseObservable
         new RestaurantDetailViewModel(this);
     private CreateGroupViewModel mCreateGroupViewModel;
     private CreateGroupContract.Presenter mCreateGroupPresenter;
+    private List<Category> mListCategories;
 
     public RestaurantDetailViewModel getRestaurantDetailViewModel() {
         return mRestaurantDetailViewModel;
@@ -97,6 +99,7 @@ public class MainViewModel extends BaseObservable
         mCreateGroupViewModel = new CreateGroupViewModel(this);
         mCreateGroupPresenter = new CreateGroupPresenter(mCreateGroupViewModel);
         mCreateGroupViewModel.setPresenter(mCreateGroupPresenter);
+        mListCategories = new ArrayList<>();
     }
 
     public Context getContext() {
@@ -138,6 +141,10 @@ public class MainViewModel extends BaseObservable
             markMyLocation(mMyLocation);
             isNeedInMyLocation = false;
         }
+    }
+
+    public List<Category> getListCategories() {
+        return mListCategories;
     }
 
     private void markMyLocation(LatLng location) {
@@ -349,7 +356,9 @@ public class MainViewModel extends BaseObservable
 
     @Override
     public void onGetCategoriesSuccess(CategoriesResponse categoriesResponse) {
-        // TODO: 06/08/2017  
+        mListCategories.clear();
+        mListCategories.addAll(categoriesResponse.getCategories());
+        mCreateGroupViewModel.setListCategories(mListCategories);
     }
 
     @Override
