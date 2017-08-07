@@ -351,12 +351,12 @@ public class MainViewModel extends BaseObservable
     }
 
     @Override
-    public void onGetNewGroupSuccess(Group group) {
+    public void onGetNewGroupLocalSuccess(Group group) {
 // TODO: 04/08/2017  
     }
 
     @Override
-    public void onGetNewGroupFailed(String e) {
+    public void onGetNewGroupLocalFailed(String e) {
         Toast.makeText(mContext, e, Toast.LENGTH_LONG).show();
     }
 

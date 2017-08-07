@@ -18,8 +18,8 @@ public interface MainContract {
         void setMapFragment(SupportMapFragment mapFragment);
         void onGetRestaurantsSuccess(RestaurantsResponse restaurantsResponse);
         void onGetRestaurantsFailed(Throwable e);
-        void onGetNewGroupSuccess(Group group);
-        void onGetNewGroupFailed(String e);
+        void onGetNewGroupLocalSuccess(Group group);
+        void onGetNewGroupLocalFailed(String e);
     }
 
     /**
