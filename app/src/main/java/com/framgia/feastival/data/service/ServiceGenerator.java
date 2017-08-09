@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ServiceGenerator {
     public static final String SHARE_PREFERENCE = "SHARE_PREFERENCE";
     public static final String SHARE_PREFERENCE_TOKEN = "SHARE_PREFERENCE_TOKEN";
-    private static final String USER_TOKEN = "USER-sToken";
+    private static final String USER_TOKEN = "USER-TOKEN";
     private static String sToken;
     private static final String BASE_URL = "http://feastival-react.herokuapp.com/api/";
     private static Retrofit sRetrofit = null;

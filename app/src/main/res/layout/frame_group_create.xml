@@ -140,37 +140,6 @@
 
                     <android.support.design.widget.TextInputEditText
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:hint="@{CreateGroupPresenter.timeFormat}"
-                        android:imeOptions="actionDone"
-                        android:inputType="datetime"
-                        android:padding="@dimen/dp_10"
-                        android:text="@={viewModel.time}"/>
-
-                </android.support.design.widget.TextInputLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dp_10"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/size"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="@dimen/sp_20"/>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/border">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@{CreateGroupPresenter.timeFormat}"
                         android:imeOptions="actionDone"

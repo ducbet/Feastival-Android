@@ -5,6 +5,7 @@ import android.location.Location;
 import com.framgia.feastival.data.source.CategoryDataSource;
 import com.framgia.feastival.data.source.RestaurantDataSource;
 import com.framgia.feastival.data.source.model.CategoriesResponse;
+import com.framgia.feastival.data.source.model.GroupDetailResponse;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -122,5 +123,28 @@ final class MainPresenter implements MainContract.Presenter {
         locationB.setLatitude(latLngB.latitude);
         locationB.setLongitude(latLngB.longitude);
         return locationA.distanceTo(locationB);
+    }
+
+    @Override
+    public void getGroupDetail(int groupId) {
+        Disposable disposable = mRestaurantRepository.getGroupDetail(groupId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith(new DisposableObserver<GroupDetailResponse>() {
+                @Override
+                public void onNext(@NonNull GroupDetailResponse response) {
+                    mViewModel.onGetGroupDetailSuccess(response);
+                }
+
+                @Override
+                public void onError(@NonNull Throwable e) {
+                    mViewModel.onGetFailed(e);
+                }
+
+                @Override
+                public void onComplete() {
+                }
+            });
+        mCompositeDisposable.add(disposable);
     }
 }

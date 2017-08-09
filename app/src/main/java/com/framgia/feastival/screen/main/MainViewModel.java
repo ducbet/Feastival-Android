@@ -17,6 +17,7 @@ import com.framgia.feastival.R;
 import com.framgia.feastival.data.source.model.CategoriesResponse;
 import com.framgia.feastival.data.source.model.Category;
 import com.framgia.feastival.data.source.model.Group;
+import com.framgia.feastival.data.source.model.GroupDetailResponse;
 import com.framgia.feastival.data.source.model.Restaurant;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
 import com.framgia.feastival.screen.BaseActivity;
@@ -359,6 +360,16 @@ public class MainViewModel extends BaseObservable
         mListCategories.clear();
         mListCategories.addAll(categoriesResponse.getCategories());
         mCreateGroupViewModel.setListCategories(mListCategories);
+    }
+
+    @Override
+    public void onClickExistGroup(Group group) {
+        // TODO: 06/08/2017
+    }
+
+    @Override
+    public void onGetGroupDetailSuccess(
+        GroupDetailResponse groupDetailResponse) { // TODO: 06/08/2017
     }
 
     @Override
