@@ -25,6 +25,7 @@ public interface MainContract {
         void onGetFailed(Throwable e);
         void onGetNewGroupLocalSuccess(Group group);
         void onGetNewGroupLocalFailed(String e);
+        void onPinNewViewPoint();
     }
 
     /**
