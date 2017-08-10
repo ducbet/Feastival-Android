@@ -2,6 +2,7 @@ package com.framgia.feastival.util;
 
 import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
@@ -78,5 +80,19 @@ public class BindingUtil {
     @BindingAdapter("spinnerAdapter")
     public static void setSourceSpinner(Spinner spinner, ArrayAdapter<String> spinnerAdapter) {
         spinner.setAdapter(spinnerAdapter);
+    }
+
+    @BindingAdapter("src")
+    public static void setImageStateBottomSheet(ImageView imageView, int state) {
+        switch (state) {
+            case BottomSheetBehavior.STATE_COLLAPSED:
+                imageView.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24px);
+                break;
+            case BottomSheetBehavior.STATE_EXPANDED:
+                imageView.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24px);
+                break;
+            default:
+                break;
+        }
     }
 }

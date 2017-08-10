@@ -291,14 +291,16 @@ public class MainViewModel extends BaseObservable
             new int[]{android.R.attr.actionBarSize});
         mBottomSheetBehavior.setPeekHeight((int) styledAttributes.getDimension(0, 0));
         styledAttributes.recycle();
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        setBottomSheetState(BottomSheetBehavior.STATE_HIDDEN);
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case BottomSheetBehavior.STATE_COLLAPSED:
+                        setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED);
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
+                        setBottomSheetState(BottomSheetBehavior.STATE_EXPANDED);
                         break;
                 }
             }
@@ -307,6 +309,11 @@ public class MainViewModel extends BaseObservable
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
         });
+    }
+
+    public void setBottomSheetState(int state) {
+        mBottomSheetBehavior.setState(state);
+        mRestaurantDetailViewModel.setState(state);
     }
 
     public void setSelectedRestaurant(Marker marker) {
