@@ -9,7 +9,11 @@ import android.databinding.BaseObservable;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -45,7 +49,8 @@ import java.util.List;
  */
 public class MainViewModel extends BaseObservable
     implements MainContract.ViewModel, OnMapReadyCallback, GoogleMap.OnMapLoadedCallback,
-    GoogleMap.OnMarkerDragListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
+    GoogleMap.OnMarkerDragListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener,
+    NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = MainViewModel.class.getName();
     private static final String MARKER_VIEW_POINT = "MARKER_VIEW_POINT";
     private static final String MARKER_RESIZE = "MARKER_RESIZE";
@@ -82,6 +87,8 @@ public class MainViewModel extends BaseObservable
     private CreateGroupViewModel mCreateGroupViewModel;
     private CreateGroupContract.Presenter mCreateGroupPresenter;
     private List<Category> mListCategories;
+    private DrawerLayout mDrawerLayout;
+    private NavigationView mNavigationView;
 
     public RestaurantDetailViewModel getRestaurantDetailViewModel() {
         return mRestaurantDetailViewModel;
@@ -130,6 +137,11 @@ public class MainViewModel extends BaseObservable
 
     public BottomSheetBehavior<View> getBottomSheetBehavior() {
         return mBottomSheetBehavior;
+    }
+
+    public void setNavigationView(DrawerLayout drawerLayout, NavigationView navigationView) {
+        mDrawerLayout = drawerLayout;
+        mNavigationView = navigationView;
     }
 
     public View getBottomSheet() {
@@ -328,6 +340,7 @@ public class MainViewModel extends BaseObservable
         mMapFragment.getMapAsync(this);
         mPresenter.onStart();
         mPresenter.getCategories();
+        mNavigationView.setNavigationItemSelectedListener(this);
         createBottomSheet();
     }
 
@@ -392,6 +405,12 @@ public class MainViewModel extends BaseObservable
     @Override
     public void onGetNewGroupLocalFailed(String e) {
         Toast.makeText(mContext, e, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onPinNewViewPoint() {
+        LatLng pointCenter = mMap.getCameraPosition().target;
+        addMarkerViewPoint(pointCenter);
     }
 
     public void onGetNewGroup() {
@@ -464,6 +483,23 @@ public class MainViewModel extends BaseObservable
                 .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             return true;
         }
+        return false;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_new_group:
+                break;
+            case R.id.create_new_restaurant:
+                break;
+            case R.id.add_more_view_point:
+                onPinNewViewPoint();
+                break;
+            default:
+                break;
+        }
+        mDrawerLayout.closeDrawer(Gravity.START);
         return false;
     }
 }

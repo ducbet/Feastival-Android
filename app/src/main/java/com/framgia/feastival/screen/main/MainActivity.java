@@ -17,6 +17,7 @@ import com.framgia.feastival.data.source.RestaurantRepository;
 import com.framgia.feastival.data.source.remote.CategoryRemoteDataSource;
 import com.framgia.feastival.data.source.remote.RestaurantRemoteDataSource;
 import com.framgia.feastival.databinding.ActivityMainBinding;
+import com.framgia.feastival.databinding.HeaderBinding;
 import com.framgia.feastival.screen.BaseActivity;
 import com.google.android.gms.maps.SupportMapFragment;
 
@@ -43,6 +44,10 @@ public class MainActivity extends BaseActivity {
         ActivityMainBinding binding =
             DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setViewModel((MainViewModel) mViewModel);
+        HeaderBinding headerBinding = DataBindingUtil.inflate(
+            getLayoutInflater(), R.layout.header, binding.leftDrawer, false);
+        headerBinding.setViewModel((MainViewModel) mViewModel);
+        ((MainViewModel) mViewModel).setNavigationView(binding.drawerLayout, binding.leftDrawer);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
             .findFragmentById(R.id.map);
         mViewModel.setMapFragment(mapFragment);
