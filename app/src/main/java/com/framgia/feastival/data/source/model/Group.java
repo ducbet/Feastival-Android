@@ -1,11 +1,14 @@
 package com.framgia.feastival.data.source.model;
 
+import android.databinding.BaseObservable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by tmd on 01/08/2017.
  */
-public class Group {
+public class Group extends BaseObservable {
+    private UserModel user;
     @SerializedName("id")
     private int mId;
     @SerializedName("category_id")
@@ -169,5 +172,8 @@ public class Group {
     @Override
     public int hashCode() {
         return 0;
+    }
+    public String getAvatarCreator() {
+        return null;
     }
 }

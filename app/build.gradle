@@ -24,6 +24,10 @@ android {
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
     }
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 dependencies {
@@ -44,4 +48,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     compile 'com.google.maps.android:android-maps-utils:0.5+'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+
 }

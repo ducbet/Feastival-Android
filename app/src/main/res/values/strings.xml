@@ -46,4 +46,8 @@
     <string name="add_more_view_point">Add more view point</string>
     <string name="creating_new_group_state">You are creating new group state</string>
     <string name="double_click_back">Please click BACK again to exit</string>
+    <string name="member">Member:</string>
+    <string name="creat">Creator:</string>
+    <string name="join">Join</string>
+    <string name="groupname">Group Name</string>
 </resources>

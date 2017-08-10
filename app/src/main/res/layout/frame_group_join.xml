@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="com.framgia.feastival.util.LayoutManagers"/>
+
+        <variable
+            name="group"
+            type="com.framgia.feastival.data.source.model.Group"/>
+
+        <variable
+            name="viewModel"
+            type="com.framgia.feastival.screen.main.joingroup.JoinGroupViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50"
+            android:layout_margin="@dimen/dp_10"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dp_250"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:hint="@string/groupname"
+                android:paddingLeft="@dimen/dp_20"
+                android:text="@{group.title}"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/sp_25"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/border"
+                android:onClick="@{() -> viewModel.onJoinGroup()}"
+                android:text="@string/join"
+                android:textAllCaps="false"
+                android:textSize="@dimen/sp_20"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_200"
+            android:layout_marginTop="@dimen/dp_20"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:maxWidth="@dimen/dp_50"
+                android:paddingLeft="@dimen/dp_15"
+                android:text="@string/creat"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/dp_20"/>
+
+            <com.framgia.feastival.util.widget.SquareImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:maxWidth="@dimen/dp_60"
+                android:src="@{group.getAvatarCreator()}"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:maxWidth="@dimen/dp_50"
+                android:text="@{group.title}"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/sp_20"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/dp_20"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_30"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/dp_15"
+                android:text="@string/member"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/sp_20"/>
+
+            <android.support.v7.widget.RecyclerView
+                bind:recyclerAdapter="@{viewModel.getGroupMemberAdapter}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                bind:layoutManager="@{LayoutManagers.grid(@integer/span_count)}"
+                android:padding="@dimen/dp_15">
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+    </LinearLayout>
+
+</layout>

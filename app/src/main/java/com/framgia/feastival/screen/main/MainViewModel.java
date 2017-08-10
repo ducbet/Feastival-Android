@@ -30,6 +30,9 @@ import com.framgia.feastival.screen.BaseActivity;
 import com.framgia.feastival.screen.main.creategroup.CreateGroupContract;
 import com.framgia.feastival.screen.main.creategroup.CreateGroupPresenter;
 import com.framgia.feastival.screen.main.creategroup.CreateGroupViewModel;
+import com.framgia.feastival.screen.main.joingroup.JoinGroupContact;
+import com.framgia.feastival.screen.main.joingroup.JoinGroupPresenter;
+import com.framgia.feastival.screen.main.joingroup.JoinGroupViewModel;
 import com.framgia.feastival.screen.main.restaurantdetail.RestaurantDetailViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -68,6 +71,7 @@ public class MainViewModel extends BaseObservable
     public static final String STATE_SHOW_RESTAURANT_DETAIL = "STATE_SHOW_RESTAURANT_DETAIL";
     public static final String STATE_SHOW_GROUP_DETAIL = "STATE_SHOW_GROUP_DETAIL";
     public static final String STATE_CREATE_GROUP = "STATE_CREATE_GROUP";
+    public static final String STATE_JOIN_GROUP = "STATE_JOIN_GROUP";
     private static final double RADIUS = 2000;
     private BitmapDescriptor mIconMarkerViewPoint;
     private BitmapDescriptor mIconMarkerViewPointDraggable;
@@ -106,6 +110,8 @@ public class MainViewModel extends BaseObservable
     private Marker mMarkerNewGroup;
     private Map<Group, Marker> mFloatingGroupsMarker;
     private Marker mMarkerFloating;
+    private JoinGroupViewModel mJoinGroupViewModel;
+    private JoinGroupContact.Presenter mJoinGroupPresenter;
     private List<Category> mListCategories;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
@@ -118,6 +124,10 @@ public class MainViewModel extends BaseObservable
         return mCreateGroupViewModel;
     }
 
+    public JoinGroupViewModel getmJoinGroupViewModel() {
+        return mJoinGroupViewModel;
+    }
+
     public MainViewModel(Context context) {
         mContext = context;
         mRestaurantsMarker = new HashMap<>();
@@ -127,6 +137,9 @@ public class MainViewModel extends BaseObservable
         mCreateGroupViewModel = new CreateGroupViewModel(this);
         mCreateGroupPresenter = new CreateGroupPresenter(mCreateGroupViewModel);
         mCreateGroupViewModel.setPresenter(mCreateGroupPresenter);
+        mJoinGroupViewModel = new JoinGroupViewModel(this);
+        mJoinGroupPresenter = new JoinGroupPresenter(mJoinGroupViewModel);
+        mJoinGroupViewModel.setPresenter(mJoinGroupPresenter);
         mListCategories = new ArrayList<>();
     }
 
