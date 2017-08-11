@@ -5,6 +5,7 @@ import android.location.Location;
 import com.framgia.feastival.data.source.CategoryDataSource;
 import com.framgia.feastival.data.source.RestaurantDataSource;
 import com.framgia.feastival.data.source.model.CategoriesResponse;
+import com.framgia.feastival.data.source.model.Group;
 import com.framgia.feastival.data.source.model.GroupDetailResponse;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
 import com.google.android.gms.maps.model.LatLng;
@@ -113,6 +114,29 @@ final class MainPresenter implements MainContract.Presenter {
                 @Override
                 public void onNext(@NonNull GroupDetailResponse response) {
                     mViewModel.onGetGroupDetailSuccess(response);
+                }
+
+                @Override
+                public void onError(@NonNull Throwable e) {
+                    mViewModel.onGetFailed(e);
+                }
+
+                @Override
+                public void onComplete() {
+                }
+            });
+        mCompositeDisposable.add(disposable);
+    }
+
+    @Override
+    public void createNewGroup(Group newGroup) {
+        Disposable disposable = mRestaurantRepository.createNewGroup(newGroup)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith(new DisposableObserver<Group>() {
+                @Override
+                public void onNext(@NonNull Group response) {
+                    mViewModel.onCreateNewGroupSuccess(response);
                 }
 
                 @Override
