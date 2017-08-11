@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.databinding.BaseObservable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -33,6 +35,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -41,10 +44,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -59,12 +64,19 @@ public class MainViewModel extends BaseObservable
     private static final String MARKER_RESIZE = "MARKER_RESIZE";
     private static final String MARKER_RESTAURANT = "MARKER_RESTAURANT";
     private static final String MARKER_GROUP = "MARKER_GROUP";
-    private static final String MARKER_NEW_GROUP = "MARKER_NEW_GROUP";
+    private static final String MARKER_FLOATING = "MARKER_FLOATING";
     public static final String STATE_SHOW_RESTAURANT_DETAIL = "STATE_SHOW_RESTAURANT_DETAIL";
     public static final String STATE_SHOW_GROUP_DETAIL = "STATE_SHOW_GROUP_DETAIL";
     public static final String STATE_CREATE_GROUP = "STATE_CREATE_GROUP";
-    private String mState;
     private static final double RADIUS = 2000;
+    private BitmapDescriptor mIconMarkerViewPoint;
+    private BitmapDescriptor mIconMarkerViewPointDraggable;
+    private BitmapDescriptor mIconMarkerResize;
+    private BitmapDescriptor mIconMarkerRestaurant;
+    private BitmapDescriptor mIconMarkerGroup;
+    private BitmapDescriptor mIconMarkerNewGroup;
+    private BitmapDescriptor mIconMarkerFloating;
+    private String mState;
     private Context mContext;
     private MainContract.Presenter mPresenter;
     private SupportMapFragment mMapFragment;
@@ -91,6 +103,8 @@ public class MainViewModel extends BaseObservable
     private CreateGroupViewModel mCreateGroupViewModel;
     private CreateGroupContract.Presenter mCreateGroupPresenter;
     private Restaurant mSelectedRestaurant;
+    private Marker mMarkerNewGroup;
+    private Marker mMarkerFloating;
     private List<Category> mListCategories;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
@@ -115,6 +129,19 @@ public class MainViewModel extends BaseObservable
         mListCategories = new ArrayList<>();
     }
 
+    private void defineMarkerIcon() {
+        mIconMarkerViewPoint =
+            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+        mIconMarkerViewPointDraggable =
+            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+        mIconMarkerResize = BitmapDescriptorFactory.fromResource(R.mipmap.ic_resize_circle);
+        mIconMarkerRestaurant = BitmapDescriptorFactory.fromResource(R.mipmap.ic_restaurant);
+        mIconMarkerGroup = BitmapDescriptorFactory.fromResource(R.mipmap.ic_group);
+        mIconMarkerNewGroup = BitmapDescriptorFactory.fromResource(R.mipmap.ic_marker_new_group);
+        mIconMarkerFloating =
+            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE);
+    }
+
     public Context getContext() {
         return mContext;
     }
@@ -130,8 +157,7 @@ public class MainViewModel extends BaseObservable
             case STATE_SHOW_GROUP_DETAIL:
                 break;
             case STATE_CREATE_GROUP:
-                mCreateGroupViewModel
-                    .setSelectedRestaurant(mRestaurantDetailViewModel.getSelectedRestaurant());
+                setBottomSheetState(BottomSheetBehavior.STATE_EXPANDED);
                 break;
             default:
                 break;
@@ -199,20 +225,22 @@ public class MainViewModel extends BaseObservable
             SphericalUtil.computeOffset(viewPoint.getPosition(), circle.getRadius(), 90));
     }
 
-    private Marker addMarkerNewGroup(LatLng location) {
-        Marker markerNewGroup = mMap.addMarker(new MarkerOptions()
-            .position(location)
-            .snippet(MARKER_NEW_GROUP)
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-        markerNewGroup.setDraggable(true);
-        return markerNewGroup;
+    private Marker addFloatingMarker() {
+        LatLng pointCenter = mMap.getCameraPosition().target;
+        Marker marker = mMap.addMarker(new MarkerOptions()
+            .position(pointCenter)
+            .snippet(MARKER_FLOATING)
+            .icon(mIconMarkerFloating));
+        marker.setDraggable(true);
+        marker.setVisible(false);
+        return marker;
     }
 
     private Marker addMarkerViewPoint(LatLng location) {
         Marker marker = mMap.addMarker(new MarkerOptions()
             .position(location)
             .snippet(MARKER_VIEW_POINT)
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+            .icon(mIconMarkerViewPointDraggable));
         marker.setTag(drawCircle(marker));
         marker.setDraggable(true);
         mViewPointsMarker.put(marker, new HashSet());
@@ -247,7 +275,7 @@ public class MainViewModel extends BaseObservable
         marker = mMap.addMarker(new MarkerOptions()
             .position(SphericalUtil.computeOffset(circle.getCenter(), circle.getRadius(), 90))
             .snippet(MARKER_RESIZE)
-            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_resize_circle)));
+            .icon(mIconMarkerResize));
         marker.setTag(viewPoint);
         marker.setDraggable(true);
         return marker;
@@ -288,7 +316,7 @@ public class MainViewModel extends BaseObservable
             }
             marker = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(restaurant.getLatitude(), restaurant.getLongtitude()))
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                .icon(mIconMarkerRestaurant)
                 .title(String.valueOf(restaurant.getId()))
                 .snippet(MARKER_RESTAURANT + restaurant.getId()));
             viewPointIds = new HashSet<>();
@@ -313,7 +341,7 @@ public class MainViewModel extends BaseObservable
             }
             marker = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(group.getLatitude(), group.getLongtitude()))
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
+                .icon(mIconMarkerGroup)
                 .title(String.valueOf(group.getId()))
                 .snippet(MARKER_GROUP + group.getId()));
             viewPointIds = new HashSet<>();
@@ -398,28 +426,69 @@ public class MainViewModel extends BaseObservable
             (Restaurant) getKeyFromValue((HashMap) mRestaurantsMarker, marker));
         mSelectedRestaurant = (Restaurant) getKeyFromValue((HashMap) mRestaurantsMarker, marker);
         mRestaurantDetailViewModel.setSelectedRestaurant(mSelectedRestaurant);
-        mCreateGroupViewModel.setSelectedRestaurant(mSelectedRestaurant);
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
     }
 
-    private void makeAllViewPointMarkerUnchangeable() {
+    private void makeAllViewPointMarkerUndraggable() {
         for (Marker viewPointMarker : mViewPointsMarker.keySet()) {
             Circle circle = (Circle) viewPointMarker.getTag();
             Marker resizeMarker = (Marker) circle.getTag();
             resizeMarker.setVisible(false);
-            viewPointMarker.setIcon(BitmapDescriptorFactory.defaultMarker());
+            viewPointMarker.setIcon(mIconMarkerViewPoint);
         }
     }
 
-    private void makeViewPointMarkerChangeable(Marker viewPointMarker) {
-        makeAllViewPointMarkerUnchangeable();
+    private void makeViewPointMarkerDraggable(Marker viewPointMarker) {
+        makeAllViewPointMarkerUndraggable();
         Circle circle = (Circle) viewPointMarker.getTag();
         Marker resizeMarker = (Marker) circle.getTag();
         resizeMarker.setVisible(true);
-        viewPointMarker
-            .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        viewPointMarker.setIcon(mIconMarkerViewPointDraggable);
+    }
+
+    private void makeMarkerNomal(Marker marker) {
+        if (marker.getSnippet().equals(MARKER_FLOATING)) {
+            marker.setVisible(false);
+            return;
+        }
+        if (marker.getSnippet().contains(MARKER_GROUP)) {
+            marker.setIcon(mIconMarkerGroup);
+            return;
+        }
+        if (marker.getSnippet().contains(MARKER_RESTAURANT)) {
+            marker.setIcon(mIconMarkerRestaurant);
+            return;
+        }
+    }
+
+    private void passAddressIntoCreateGroupFrame(Marker marker) {
+        if (marker.getSnippet().equals(MARKER_FLOATING)) {
+            mCreateGroupViewModel.setAddress(getAddress(marker.getPosition()));
+            return;
+        }
+        if (marker.getSnippet().contains(MARKER_RESTAURANT)) {
+            mCreateGroupViewModel.setSelectedRestaurant(mSelectedRestaurant);
+            return;
+        }
+    }
+
+    private String getAddress(LatLng latLng) {
+        Geocoder gcd = new Geocoder(mContext, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = gcd.getFromLocation(latLng.latitude, latLng.longitude, 1);
+        } catch (IOException e) {
+        }
+        if (addresses == null || addresses.isEmpty()) {
+            return "";
+        }
+        String address = "";
+        for (int i = 0; addresses.get(0).getAddressLine(i) != null; i++) {
+            address += ", " + addresses.get(0).getAddressLine(i);
+        }
+        return address.replaceFirst(", ", "");
     }
 
     @Override
@@ -445,6 +514,7 @@ public class MainViewModel extends BaseObservable
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         showNotifyLoading();
+        defineMarkerIcon();
         mMap.setOnMapLoadedCallback(this);
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMarkerDragListener(this);
@@ -472,6 +542,13 @@ public class MainViewModel extends BaseObservable
     @Override
     public void onClickCreateNewGroup() {
         setState(STATE_CREATE_GROUP);
+        makeAllViewPointMarkerUndraggable();
+        mMarkerFloating = addFloatingMarker();
+        if (mSelectedRestaurant != null) {
+            onMarkNewGroup(mRestaurantsMarker.get(mSelectedRestaurant));
+            return;
+        }
+        onMarkNewGroup(mMarkerFloating);
     }
 
     @Override
@@ -499,12 +576,15 @@ public class MainViewModel extends BaseObservable
         Toast.makeText(mContext, e, Toast.LENGTH_LONG).show();
     }
 
-    private Marker mSelectedMarker;
-
     @Override
-    public void onPinNewGroup() {
-        LatLng pointCenter = mMap.getCameraPosition().target;
-        mSelectedMarker = addMarkerNewGroup(pointCenter);
+    public void onMarkNewGroup(Marker marker) {
+        if (mMarkerNewGroup != null) {
+            makeMarkerNomal(mMarkerNewGroup);
+        }
+        mMarkerNewGroup = marker;
+        mMarkerNewGroup.setVisible(true);
+        mMarkerNewGroup.setIcon(mIconMarkerNewGroup);
+        passAddressIntoCreateGroupFrame(marker);
     }
 
     @Override
@@ -514,7 +594,7 @@ public class MainViewModel extends BaseObservable
     }
 
     @Override
-    public void changeStateBottomSheet() {
+    public void onChangeStateBottomSheet() {
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED);
             return;
@@ -534,7 +614,7 @@ public class MainViewModel extends BaseObservable
     @Override
     public void onMarkerDragStart(Marker marker) {
         if (marker.getSnippet().equals(MARKER_VIEW_POINT)) {
-            makeViewPointMarkerChangeable(marker);
+            makeViewPointMarkerDraggable(marker);
         }
     }
 
@@ -566,21 +646,32 @@ public class MainViewModel extends BaseObservable
             mPresenter.getRestaurants(viewPoint, radius);
             return;
         }
+        if (marker.getSnippet().equals(MARKER_FLOATING)) {
+            onMarkNewGroup(mMarkerFloating);
+            return;
+        }
     }
 
     @Override
     public void onMapClick(LatLng latLng) {
-        makeAllViewPointMarkerUnchangeable();
+        makeAllViewPointMarkerUndraggable();
+        if (mState == STATE_CREATE_GROUP) {
+            mMarkerFloating.setPosition(latLng);
+            onMarkNewGroup(mMarkerFloating);
+        }
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
         if (marker.getSnippet().contains(MARKER_RESTAURANT)) {
             setSelectedRestaurant(marker);
+            if (mState == STATE_CREATE_GROUP) {
+                onMarkNewGroup(marker);
+            }
             return true;
         }
         if (marker.getSnippet().equals(MARKER_VIEW_POINT)) {
-            makeViewPointMarkerChangeable(marker);
+            makeViewPointMarkerDraggable(marker);
             return true;
         }
         return false;
@@ -590,18 +681,12 @@ public class MainViewModel extends BaseObservable
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.create_new_group:
-                if (mState == STATE_CREATE_GROUP) {
-                    Toast.makeText(mContext, mContext.getString(R.string.creating_new_group_state),
-                        Toast.LENGTH_LONG).show();
-                } else {
-                    makeAllViewPointMarkerUnchangeable();
-                    onPinNewGroup();
-                }
+                onClickCreateNewGroup();
                 break;
             case R.id.create_new_restaurant:
                 break;
             case R.id.add_more_view_point:
-                makeAllViewPointMarkerUnchangeable();
+                makeAllViewPointMarkerUndraggable();
                 onPinNewViewPoint();
                 break;
             default:

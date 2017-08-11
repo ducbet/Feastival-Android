@@ -112,7 +112,8 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/enter_group_address"
                         android:imeOptions="actionDone"
-                        android:inputType="text"
+                        android:inputType="textMultiLine"
+                        android:maxLines="@integer/max_lines_address"
                         android:padding="@dimen/dp_10"
                         android:text="@={viewModel.address}"/>
 

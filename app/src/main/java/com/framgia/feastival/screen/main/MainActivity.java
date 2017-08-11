@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -26,11 +27,13 @@ import com.google.android.gms.maps.SupportMapFragment;
  */
 public class MainActivity extends BaseActivity {
     private static final String TAG = MainActivity.class.getName();
+    private static final long EXIT_DELAY = 2000;
     private static int REQUEST_ACCESS_LOCATION = 123;
     private MainContract.ViewModel mViewModel;
     private static final String PERMISSION_GET_LOCATION[] =
         {Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION};
+    private boolean mIsDoubleClickedBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,5 +116,21 @@ public class MainActivity extends BaseActivity {
     protected void onStop() {
         mViewModel.onStop();
         super.onStop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mIsDoubleClickedBack) {
+            super.onBackPressed();
+            return;
+        }
+        mIsDoubleClickedBack = true;
+        Toast.makeText(this, getString(R.string.double_click_back), Toast.LENGTH_LONG).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mIsDoubleClickedBack = false;
+            }
+        }, EXIT_DELAY);
     }
 }

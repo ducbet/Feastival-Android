@@ -27,9 +27,9 @@ public interface MainContract {
         void onGetFailed(Throwable e);
         void onGetNewGroupLocalSuccess(Group group);
         void onGetNewGroupLocalFailed(String e);
-        void onPinNewGroup();
+        void onMarkNewGroup(Marker marker);
         void onPinNewViewPoint();
-        void changeStateBottomSheet();
+        void onChangeStateBottomSheet();
     }
 
     /**
