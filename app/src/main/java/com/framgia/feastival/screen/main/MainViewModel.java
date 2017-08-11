@@ -42,7 +42,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Exposes the data to be used in the Main screen.
@@ -65,9 +68,9 @@ public class MainViewModel extends BaseObservable
     private MainContract.Presenter mPresenter;
     private SupportMapFragment mMapFragment;
     private GoogleMap mMap;
-    private List<Marker> mRestaurantsMarker;
-    private List<Marker> mGroupsMarker;
-    private List<Marker> mViewPointMarker;
+    private Map<Restaurant, Marker> mRestaurantsMarker;
+    private Map<Group, Marker> mGroupsMarker;
+    private Map<Marker, HashSet> mViewPointsMarker;
     private LatLng mMyLocation;
     private Marker mMarkerMyLocation;
     private boolean isNeedInMyLocation;
@@ -100,9 +103,9 @@ public class MainViewModel extends BaseObservable
 
     public MainViewModel(Context context) {
         mContext = context;
-        mRestaurantsMarker = new ArrayList<>();
-        mGroupsMarker = new ArrayList<>();
-        mViewPointMarker = new ArrayList<>();
+        mRestaurantsMarker = new HashMap<>();
+        mGroupsMarker = new HashMap<>();
+        mViewPointsMarker = new HashMap<>();
         setState(STATE_SHOW_RESTAURANT_DETAIL);
         mCreateGroupViewModel = new CreateGroupViewModel(this);
         mCreateGroupPresenter = new CreateGroupPresenter(mCreateGroupViewModel);
@@ -164,7 +167,7 @@ public class MainViewModel extends BaseObservable
         if (mMap != null) {
             if (mMarkerMyLocation != null) {
                 removeViewPoint(mMarkerMyLocation);
-                mViewPointMarker.remove(mMarkerMyLocation);
+                mViewPointsMarker.remove(mMarkerMyLocation);
             }
             mMarkerMyLocation = addMarkerViewPoint(location);
         }
@@ -176,7 +179,7 @@ public class MainViewModel extends BaseObservable
         Marker markerResize = (Marker) circle.getTag();
         markerResize.remove();
         circle.remove();
-        mViewPointMarker.remove(viewPoint);
+        mViewPointsMarker.remove(viewPoint);
         viewPoint.remove();
     }
 
@@ -201,7 +204,7 @@ public class MainViewModel extends BaseObservable
             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         marker.setTag(drawCircle(marker));
         marker.setDraggable(true);
-        mViewPointMarker.add(marker);
+        mViewPointsMarker.put(marker, new HashSet());
         return marker;
     }
 
@@ -219,7 +222,7 @@ public class MainViewModel extends BaseObservable
             .radius(radius)
             .strokeWidth(2)
             .strokeColor(mContext.getResources().getColor(R.color.color_red_accent_200)));
-        mPresenter.getRestaurants(viewPoint.getPosition(), radius);
+        mPresenter.getRestaurants(viewPoint, radius);
         circle.setTag(drawResizeMarker(viewPoint, circle));
         return circle;
     }
@@ -248,11 +251,9 @@ public class MainViewModel extends BaseObservable
 
     public void getMyLocation() {
         if (ActivityCompat.checkSelfPermission(mContext,
-            Manifest.permission.ACCESS_FINE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(mContext,
-                Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
+            Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(mContext,
+            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (mContext instanceof MainActivity) {
                 ((MainActivity) mContext).requestPermission();
             }
@@ -263,36 +264,84 @@ public class MainViewModel extends BaseObservable
         }
     }
 
-    private void markNearbyRestaurants(RestaurantsResponse restaurantsResponse) {
-        for (Marker marker : mRestaurantsMarker) {
-            marker.remove();
-        }
-        mRestaurantsMarker.clear();
-        for (Restaurant restaurant : restaurantsResponse.getRestaurants()) {
-            Marker marker = mMap.addMarker(new MarkerOptions()
+    private void markNearbyRestaurants(Marker viewPoint, RestaurantsResponse response) {
+        Marker marker;
+        HashSet<String> viewPointIds;
+        for (Restaurant restaurant : response.getRestaurants()) {
+            if (mRestaurantsMarker.containsKey(restaurant)) {
+                viewPointIds =
+                    (HashSet<String>) (mRestaurantsMarker.get(restaurant)).getTag();
+                viewPointIds.add(viewPoint.getId());
+                mViewPointsMarker.get(viewPoint).add(restaurant);
+                continue;
+            }
+            marker = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(restaurant.getLatitude(), restaurant.getLongtitude()))
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_restaurant))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
                 .title(String.valueOf(restaurant.getId()))
                 .snippet(MARKER_RESTAURANT + restaurant.getId()));
-            marker.setTag(restaurant);
-            mRestaurantsMarker.add(marker);
+            viewPointIds = new HashSet<>();
+            viewPointIds.add(viewPoint.getId());
+            marker.setTag(viewPointIds);
+            mRestaurantsMarker.put(restaurant, marker);
+            mViewPointsMarker.get(viewPoint).add(restaurant);
+        }
+        removeDuplicate(mRestaurantsMarker, response.getRestaurants(), viewPoint);
+    }
+
+    private void markNearbyGroups(Marker viewPoint, RestaurantsResponse response) {
+        Marker marker;
+        HashSet<String> viewPointIds;
+        for (Group group : response.getGroups()) {
+            if (mGroupsMarker.containsKey(group)) {
+                viewPointIds =
+                    (HashSet<String>) (mGroupsMarker.get(group)).getTag();
+                viewPointIds.add(viewPoint.getId());
+                mViewPointsMarker.get(viewPoint).add(group);
+                continue;
+            }
+            marker = mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(group.getLatitude(), group.getLongtitude()))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
+                .title(String.valueOf(group.getId()))
+                .snippet(MARKER_GROUP + group.getId()));
+            viewPointIds = new HashSet<>();
+            viewPointIds.add(viewPoint.getId());
+            marker.setTag(viewPointIds);
+            mGroupsMarker.put(group, marker);
+            mViewPointsMarker.get(viewPoint).add(group);
+        }
+        removeDuplicate(mGroupsMarker, response.getGroups(), viewPoint);
+    }
+
+    private void removeDuplicate(Map hashMap, List newArea, Marker viewPoint) {
+        Marker marker;
+        HashSet viewPointIds;
+        HashSet oldArea = mViewPointsMarker.get(viewPoint);
+        List outSide = new ArrayList(oldArea);
+        outSide.removeAll(newArea);
+        for (Object o : outSide) {
+            marker = (Marker) hashMap.get(o);
+            if (marker == null) {
+                continue;
+            }
+            viewPointIds = (HashSet) marker.getTag();
+            viewPointIds.remove(viewPoint.getId());
+            oldArea.remove(o);
+            if (viewPointIds.isEmpty()) {
+                marker.remove();
+                hashMap.remove(o);
+            }
         }
     }
 
-    private void markNearbyGroups(RestaurantsResponse restaurantsResponse) {
-        for (Marker marker : mGroupsMarker) {
-            marker.remove();
+    private Object getKeyFromValue(HashMap hashMap, Object value) {
+        for (Object o : hashMap.keySet()) {
+            if (hashMap.get(o).equals(value)) {
+                return o;
+            }
         }
-        mGroupsMarker.clear();
-        for (Group group : restaurantsResponse.getGroups()) {
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(group.getLatitude(), group.getLongtitude()))
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_group))
-                .title(String.valueOf(group.getId()))
-                .snippet(MARKER_GROUP + group.getId()));
-            marker.setTag(group);
-            mGroupsMarker.add(marker);
-        }
+        return null;
     }
 
     private void createBottomSheet() {
@@ -329,10 +378,29 @@ public class MainViewModel extends BaseObservable
     }
 
     public void setSelectedRestaurant(Marker marker) {
-        mRestaurantDetailViewModel.setSelectedRestaurant((Restaurant) marker.getTag());
+        mRestaurantDetailViewModel.setSelectedRestaurant(
+            (Restaurant) getKeyFromValue((HashMap) mRestaurantsMarker, marker));
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
+    }
+
+    private void makeAllViewPointMarkerUnchangeable() {
+        for (Marker viewPointMarker : mViewPointsMarker.keySet()) {
+            Circle circle = (Circle) viewPointMarker.getTag();
+            Marker resizeMarker = (Marker) circle.getTag();
+            resizeMarker.setVisible(false);
+            viewPointMarker.setIcon(BitmapDescriptorFactory.defaultMarker());
+        }
+    }
+
+    private void makeViewPointMarkerChangeable(Marker viewPointMarker) {
+        makeAllViewPointMarkerUnchangeable();
+        Circle circle = (Circle) viewPointMarker.getTag();
+        Marker resizeMarker = (Marker) circle.getTag();
+        resizeMarker.setVisible(true);
+        viewPointMarker
+            .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
     }
 
     @Override
@@ -370,9 +438,9 @@ public class MainViewModel extends BaseObservable
     }
 
     @Override
-    public void onGetRestaurantsSuccess(RestaurantsResponse restaurantsResponse) {
-        markNearbyRestaurants(restaurantsResponse);
-        markNearbyGroups(restaurantsResponse);
+    public void onGetRestaurantsSuccess(Marker viewPoint, RestaurantsResponse response) {
+        markNearbyRestaurants(viewPoint, response);
+        markNearbyGroups(viewPoint, response);
     }
 
     @Override
@@ -429,8 +497,7 @@ public class MainViewModel extends BaseObservable
     @Override
     public void onMarkerDragStart(Marker marker) {
         if (marker.getSnippet().equals(MARKER_VIEW_POINT)) {
-            marker
-                .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            makeViewPointMarkerChangeable(marker);
         }
     }
 
@@ -450,25 +517,23 @@ public class MainViewModel extends BaseObservable
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
+        Circle circle;
         if (marker.getSnippet().equals(MARKER_VIEW_POINT)) {
-            ((Marker) ((Circle) marker.getTag()).getTag()).setVisible(true);
-            mPresenter.getRestaurants(marker.getPosition(), ((Circle) marker.getTag()).getRadius());
+            mPresenter.getRestaurants(marker, ((Circle) marker.getTag()).getRadius());
             return;
         }
         if (marker.getSnippet().equals(MARKER_RESIZE)) {
             Marker viewPoint = (Marker) marker.getTag();
-            double radius = ((Circle) viewPoint.getTag()).getRadius();
-            mPresenter.getRestaurants(viewPoint.getPosition(), radius);
+            circle = (Circle) viewPoint.getTag();
+            double radius = circle.getRadius();
+            mPresenter.getRestaurants(viewPoint, radius);
             return;
         }
     }
 
     @Override
     public void onMapClick(LatLng latLng) {
-        for (Marker marker : mViewPointMarker) {
-            ((Marker) ((Circle) marker.getTag()).getTag()).setVisible(false);
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker());
-        }
+        makeAllViewPointMarkerUnchangeable();
     }
 
     @Override
@@ -478,9 +543,7 @@ public class MainViewModel extends BaseObservable
             return true;
         }
         if (marker.getSnippet().equals(MARKER_VIEW_POINT)) {
-            ((Marker) ((Circle) marker.getTag()).getTag()).setVisible(true);
-            marker
-                .setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            makeViewPointMarkerChangeable(marker);
             return true;
         }
         return false;
@@ -494,6 +557,7 @@ public class MainViewModel extends BaseObservable
             case R.id.create_new_restaurant:
                 break;
             case R.id.add_more_view_point:
+                makeAllViewPointMarkerUnchangeable();
                 onPinNewViewPoint();
                 break;
             default:
