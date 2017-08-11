@@ -59,6 +59,7 @@ public class MainViewModel extends BaseObservable
     private static final String MARKER_RESIZE = "MARKER_RESIZE";
     private static final String MARKER_RESTAURANT = "MARKER_RESTAURANT";
     private static final String MARKER_GROUP = "MARKER_GROUP";
+    private static final String MARKER_NEW_GROUP = "MARKER_NEW_GROUP";
     public static final String STATE_SHOW_RESTAURANT_DETAIL = "STATE_SHOW_RESTAURANT_DETAIL";
     public static final String STATE_SHOW_GROUP_DETAIL = "STATE_SHOW_GROUP_DETAIL";
     public static final String STATE_CREATE_GROUP = "STATE_CREATE_GROUP";
@@ -89,6 +90,7 @@ public class MainViewModel extends BaseObservable
         new RestaurantDetailViewModel(this);
     private CreateGroupViewModel mCreateGroupViewModel;
     private CreateGroupContract.Presenter mCreateGroupPresenter;
+    private Restaurant mSelectedRestaurant;
     private List<Category> mListCategories;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
@@ -195,6 +197,15 @@ public class MainViewModel extends BaseObservable
         circle.setCenter(viewPoint.getPosition());
         makerResize.setPosition(
             SphericalUtil.computeOffset(viewPoint.getPosition(), circle.getRadius(), 90));
+    }
+
+    private Marker addMarkerNewGroup(LatLng location) {
+        Marker markerNewGroup = mMap.addMarker(new MarkerOptions()
+            .position(location)
+            .snippet(MARKER_NEW_GROUP)
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+        markerNewGroup.setDraggable(true);
+        return markerNewGroup;
     }
 
     private Marker addMarkerViewPoint(LatLng location) {
@@ -375,11 +386,19 @@ public class MainViewModel extends BaseObservable
     public void setBottomSheetState(int state) {
         mBottomSheetBehavior.setState(state);
         mRestaurantDetailViewModel.setState(state);
+        mCreateGroupViewModel.setState(state);
+    }
+
+    public Restaurant getSelectedRestaurant() {
+        return mSelectedRestaurant;
     }
 
     public void setSelectedRestaurant(Marker marker) {
         mRestaurantDetailViewModel.setSelectedRestaurant(
             (Restaurant) getKeyFromValue((HashMap) mRestaurantsMarker, marker));
+        mSelectedRestaurant = (Restaurant) getKeyFromValue((HashMap) mRestaurantsMarker, marker);
+        mRestaurantDetailViewModel.setSelectedRestaurant(mSelectedRestaurant);
+        mCreateGroupViewModel.setSelectedRestaurant(mSelectedRestaurant);
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
@@ -451,6 +470,11 @@ public class MainViewModel extends BaseObservable
     }
 
     @Override
+    public void onClickCreateNewGroup() {
+        setState(STATE_CREATE_GROUP);
+    }
+
+    @Override
     public void onClickExistGroup(Group group) {
         // TODO: 06/08/2017
     }
@@ -475,17 +499,30 @@ public class MainViewModel extends BaseObservable
         Toast.makeText(mContext, e, Toast.LENGTH_LONG).show();
     }
 
+    private Marker mSelectedMarker;
+
+    @Override
+    public void onPinNewGroup() {
+        LatLng pointCenter = mMap.getCameraPosition().target;
+        mSelectedMarker = addMarkerNewGroup(pointCenter);
+    }
+
     @Override
     public void onPinNewViewPoint() {
         LatLng pointCenter = mMap.getCameraPosition().target;
         addMarkerViewPoint(pointCenter);
     }
 
-    public void onGetNewGroup() {
-        if (mCreateGroupViewModel == null) {
+    @Override
+    public void changeStateBottomSheet() {
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED);
             return;
         }
-        mCreateGroupViewModel.onGetNewGroup();
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            setBottomSheetState(BottomSheetBehavior.STATE_EXPANDED);
+            return;
+        }
     }
 
     @Override
@@ -553,6 +590,13 @@ public class MainViewModel extends BaseObservable
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.create_new_group:
+                if (mState == STATE_CREATE_GROUP) {
+                    Toast.makeText(mContext, mContext.getString(R.string.creating_new_group_state),
+                        Toast.LENGTH_LONG).show();
+                } else {
+                    makeAllViewPointMarkerUnchangeable();
+                    onPinNewGroup();
+                }
                 break;
             case R.id.create_new_restaurant:
                 break;

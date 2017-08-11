@@ -2,8 +2,6 @@ package com.framgia.feastival.screen.main.restaurantdetail;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.view.View;
 
 import com.framgia.feastival.BR;
 import com.framgia.feastival.data.source.model.Restaurant;
@@ -50,17 +48,6 @@ public class RestaurantDetailViewModel extends BaseObservable {
     }
 
     public void changeStateBottomSheet() {
-        BottomSheetBehavior<View> bottomSheetBehavior =
-            ((MainViewModel) mBaseViewModel).getBottomSheetBehavior();
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            mState = BottomSheetBehavior.STATE_COLLAPSED;
-            ((MainViewModel) mBaseViewModel).setBottomSheetState(mState);
-            return;
-        }
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-            mState = BottomSheetBehavior.STATE_EXPANDED;
-            ((MainViewModel) mBaseViewModel).setBottomSheetState(mState);
-            return;
-        }
+        ((MainViewModel) mBaseViewModel).changeStateBottomSheet();
     }
 }

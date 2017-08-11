@@ -21,12 +21,15 @@ public interface MainContract {
         void setMapFragment(SupportMapFragment mapFragment);
         void onGetRestaurantsSuccess(Marker viewPoint, RestaurantsResponse restaurantsResponse);
         void onGetCategoriesSuccess(CategoriesResponse categoriesResponse);
+        void onClickCreateNewGroup();
         void onClickExistGroup(Group group);
         void onGetGroupDetailSuccess(GroupDetailResponse groupDetailResponse);
         void onGetFailed(Throwable e);
         void onGetNewGroupLocalSuccess(Group group);
         void onGetNewGroupLocalFailed(String e);
+        void onPinNewGroup();
         void onPinNewViewPoint();
+        void changeStateBottomSheet();
     }
 
     /**

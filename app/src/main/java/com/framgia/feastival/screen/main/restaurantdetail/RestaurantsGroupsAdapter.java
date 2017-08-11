@@ -15,8 +15,6 @@ import com.framgia.feastival.screen.main.MainViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.framgia.feastival.screen.main.MainViewModel.STATE_CREATE_GROUP;
-
 /**
  * Created by tmd on 01/08/2017.
  */
@@ -94,7 +92,7 @@ public class RestaurantsGroupsAdapter
 
         @Override
         public void onClick(View view) {
-            ((MainViewModel) mViewModel).setState(STATE_CREATE_GROUP);
+            mViewModel.onClickCreateNewGroup();
         }
     }
 

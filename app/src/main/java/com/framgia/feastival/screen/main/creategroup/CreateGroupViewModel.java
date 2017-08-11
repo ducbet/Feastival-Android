@@ -2,13 +2,10 @@ package com.framgia.feastival.screen.main.creategroup;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
-import android.support.design.widget.BottomSheetBehavior;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 
 import com.framgia.feastival.BR;
-import com.framgia.feastival.R;
 import com.framgia.feastival.data.source.model.Category;
 import com.framgia.feastival.data.source.model.Group;
 import com.framgia.feastival.data.source.model.Restaurant;
@@ -25,6 +22,7 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
     private BaseViewModel mBaseViewModel;
     private CreateGroupContract.Presenter mPresenter;
     private Restaurant mSelectedRestaurant;
+    private int mState;
     private String mName;
     private String mAddress;
     private String mTime;
@@ -56,6 +54,12 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
         notifyPropertyChanged(BR.spinnerAdapter);
     }
 
+    @Bindable
+    public int getState() {
+        return mState;
+    }
+
+    @Bindable
     public Restaurant getSelectedRestaurant() {
         return mSelectedRestaurant;
     }
@@ -85,9 +89,14 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
         notifyChange();
     }
 
+    public void setState(int state) {
+        mState = state;
+        notifyPropertyChanged(BR.state);
+    }
+
     public void setSelectedRestaurant(Restaurant selectedRestaurant) {
         mSelectedRestaurant = selectedRestaurant;
-        mAddress = mSelectedRestaurant.getAddress();
+        setAddress(mSelectedRestaurant.getAddress());
     }
 
     public void setName(String name) {
@@ -122,13 +131,8 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
     }
 
     @Override
-    public void onGetNewGroup() {
-        mPresenter.checkValid(mName, mAddress, mTime, mSize);
-    }
-
-    @Override
     public void onCreateGroup() {
-        ((MainViewModel) mBaseViewModel).onGetNewGroup();
+        mPresenter.checkValid(mName, mAddress, mTime, mSize);
     }
 
     @Override
@@ -157,18 +161,7 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
 
     @Override
     public void changeStateBottomSheet(View view) {
-        BottomSheetBehavior<View> bottomSheetBehavior =
-            ((MainViewModel) mBaseViewModel).getBottomSheetBehavior();
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            ((ImageView) view).setImageResource(R.drawable.ic_keyboard_arrow_up_white_24px);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            return;
-        }
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-            ((ImageView) view).setImageResource(R.drawable.ic_keyboard_arrow_down_white_24px);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            return;
-        }
+        ((MainViewModel) mBaseViewModel).changeStateBottomSheet();
     }
 
     @Override
