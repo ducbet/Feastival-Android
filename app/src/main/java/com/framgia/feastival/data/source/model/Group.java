@@ -156,4 +156,18 @@ public class Group {
     public void setUpdateAt(String updateAt) {
         mUpdateAt = updateAt;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (mLatitude == ((Group) obj).getLatitude()
+            && mLongtitude == ((Group) obj).getLongtitude()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

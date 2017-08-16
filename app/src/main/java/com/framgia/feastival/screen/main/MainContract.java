@@ -8,6 +8,7 @@ import com.framgia.feastival.screen.BasePresenter;
 import com.framgia.feastival.screen.BaseViewModel;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 /**
  * This specifies the contract between the view and the presenter.
@@ -18,7 +19,7 @@ public interface MainContract {
      */
     interface ViewModel extends BaseViewModel<Presenter> {
         void setMapFragment(SupportMapFragment mapFragment);
-        void onGetRestaurantsSuccess(RestaurantsResponse restaurantsResponse);
+        void onGetRestaurantsSuccess(Marker viewPoint, RestaurantsResponse restaurantsResponse);
         void onGetCategoriesSuccess(CategoriesResponse categoriesResponse);
         void onClickExistGroup(Group group);
         void onGetGroupDetailSuccess(GroupDetailResponse groupDetailResponse);
@@ -32,8 +33,7 @@ public interface MainContract {
      * Presenter.
      */
     interface Presenter extends BasePresenter {
-        void getRestaurants();
-        void getRestaurants(LatLng location, double radius);
+        void getRestaurants(Marker viewPoint, double radius);
         void getCategories();
         double getDistance(LatLng latLngA, LatLng latLngB);
         void getGroupDetail(int groupId);

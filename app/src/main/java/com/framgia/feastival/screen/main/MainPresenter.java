@@ -8,6 +8,7 @@ import com.framgia.feastival.data.source.model.CategoriesResponse;
 import com.framgia.feastival.data.source.model.GroupDetailResponse;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
@@ -46,48 +47,26 @@ final class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void getRestaurants() {
-        Disposable disposable = mRestaurantRepository.getRestaurants()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith(new DisposableObserver<RestaurantsResponse>() {
-                @Override
-                public void onNext(@NonNull RestaurantsResponse response) {
-                    mViewModel.onGetRestaurantsSuccess(response);
-                }
+    public void getRestaurants(final Marker viewPoint, final double radius) {
+        Disposable disposable =
+            mRestaurantRepository.getRestaurants(viewPoint.getPosition(), radius)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<RestaurantsResponse>() {
+                    @Override
+                    public void onNext(@NonNull RestaurantsResponse response) {
+                        mViewModel.onGetRestaurantsSuccess(viewPoint, response);
+                    }
 
-                @Override
-                public void onError(@NonNull Throwable e) {
-                    mViewModel.onGetFailed(e);
-                }
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        mViewModel.onGetFailed(e);
+                    }
 
-                @Override
-                public void onComplete() {
-                }
-            });
-        mCompositeDisposable.add(disposable);
-    }
-
-    @Override
-    public void getRestaurants(final LatLng location, final double radius) {
-        Disposable disposable = mRestaurantRepository.getRestaurants(location, radius)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith(new DisposableObserver<RestaurantsResponse>() {
-                @Override
-                public void onNext(@NonNull RestaurantsResponse response) {
-                    mViewModel.onGetRestaurantsSuccess(response);
-                }
-
-                @Override
-                public void onError(@NonNull Throwable e) {
-                    mViewModel.onGetFailed(e);
-                }
-
-                @Override
-                public void onComplete() {
-                }
-            });
+                    @Override
+                    public void onComplete() {
+                    }
+                });
         mCompositeDisposable.add(disposable);
     }
 
