@@ -48,6 +48,6 @@ public class RestaurantDetailViewModel extends BaseObservable {
     }
 
     public void changeStateBottomSheet() {
-        ((MainViewModel) mBaseViewModel).changeStateBottomSheet();
+        ((MainViewModel) mBaseViewModel).onChangeStateBottomSheet();
     }
 }

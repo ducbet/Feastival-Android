@@ -161,7 +161,7 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
 
     @Override
     public void changeStateBottomSheet(View view) {
-        ((MainViewModel) mBaseViewModel).changeStateBottomSheet();
+        ((MainViewModel) mBaseViewModel).onChangeStateBottomSheet();
     }
 
     @Override
