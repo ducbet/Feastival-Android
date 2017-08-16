@@ -13,7 +13,6 @@ public class CreateGroupContract {
      * View.
      */
     public interface ViewModel extends BaseViewModel<CreateGroupContract.Presenter> {
-        void onGetNewGroup();
         void onCreateGroup();
         void onCancelClick();
         void onValidateSuccess();

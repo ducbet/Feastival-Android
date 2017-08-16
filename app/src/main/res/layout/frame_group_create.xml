@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:bind="http://schemas.android.com/apk/res-auto"
     >
 
     <data>
@@ -33,7 +33,7 @@
                 android:layout_marginStart="@dimen/dp_10"
                 android:contentDescription="@string/content_description"
                 android:onClick="@{(view) -> viewModel.changeStateBottomSheet(view)}"
-                android:src="@drawable/ic_keyboard_arrow_up_white_24px"
+                bind:src="@{viewModel.state}"
                 />
 
             <TextView
@@ -201,7 +201,7 @@
                     android:background="@drawable/border"
                     android:paddingBottom="@dimen/dp_15"
                     android:paddingTop="@dimen/dp_15"
-                    app:spinnerAdapter="@{viewModel.spinnerAdapter}"
+                    bind:spinnerAdapter="@{viewModel.spinnerAdapter}"
                     >
                 </Spinner>
 
