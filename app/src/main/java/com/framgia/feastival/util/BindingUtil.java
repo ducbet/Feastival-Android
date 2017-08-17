@@ -17,12 +17,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import com.bumptech.glide.Glide;
 import com.framgia.feastival.R;
 import com.framgia.feastival.databinding.FrameGroupCreateBinding;
+import com.framgia.feastival.databinding.FrameGroupJoinBinding;
 import com.framgia.feastival.databinding.FrameRestaurantDetailBinding;
 import com.framgia.feastival.screen.main.MainViewModel;
 
 import static com.framgia.feastival.screen.main.MainViewModel.STATE_CREATE_GROUP;
+import static com.framgia.feastival.screen.main.MainViewModel.STATE_JOIN_GROUP;
 import static com.framgia.feastival.screen.main.MainViewModel.STATE_SHOW_GROUP_DETAIL;
 import static com.framgia.feastival.screen.main.MainViewModel.STATE_SHOW_RESTAURANT_DETAIL;
 
@@ -30,6 +33,18 @@ import static com.framgia.feastival.screen.main.MainViewModel.STATE_SHOW_RESTAUR
  * Created by tmd on 01/08/2017.
  */
 public class BindingUtil {
+    @BindingAdapter({"recyclerAdapter"})
+    public static void setAdapter(RecyclerView view, RecyclerView.Adapter adapter) {
+        view.setAdapter(adapter);
+    }
+
+    @BindingAdapter("imageUrl")
+    public static void loadImage(ImageView imageView, String url) {
+        Glide.with(imageView.getContext())
+            .load(url)
+            .into(imageView);
+    }
+
     @BindingAdapter("layoutManager")
     public static void setLayoutManager(RecyclerView recyclerView,
                                         LayoutManagers.LayoutManagerFactory layoutManagerFactory) {
@@ -67,6 +82,19 @@ public class BindingUtil {
                         .frame_group_create, rootCoordinate, false);
                 createGroupBinding.setViewModel(mainViewModel.getCreateGroupViewModel());
                 mView = createGroupBinding.getRoot();
+                bottomSheet.getLayoutParams().height = mainViewModel.getContext().getResources()
+                    .getInteger(R.integer.bottom_sheet_expand_create_group);
+                bottomSheet.requestLayout();
+                mainViewModel.getBottomSheetBehavior().onLayoutChild(rootCoordinate, bottomSheet,
+                    ViewCompat.LAYOUT_DIRECTION_LTR);
+                rootCoordinate.addView(mView, mParams);
+                break;
+            case STATE_JOIN_GROUP:
+                FrameGroupJoinBinding groupJoinBinding =
+                    DataBindingUtil.inflate(layoutInflater, R.layout
+                        .frame_group_create, rootCoordinate, false);
+                groupJoinBinding.setViewModel(mainViewModel.getmJoinGroupViewModel());
+                mView = groupJoinBinding.getRoot();
                 bottomSheet.getLayoutParams().height = mainViewModel.getContext().getResources()
                     .getInteger(R.integer.bottom_sheet_expand_create_group);
                 bottomSheet.requestLayout();

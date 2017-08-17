@@ -12,6 +12,8 @@ public class RestaurantsResponse {
     private List<Restaurant> mRestaurants;
     @SerializedName("groups")
     private List<Group> mGroups;
+    @SerializedName("users")
+    private List<UserModel>  mUsers;
 
     public List<Restaurant> getRestaurants() {
         return mRestaurants;
