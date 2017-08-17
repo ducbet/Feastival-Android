@@ -104,6 +104,7 @@ public class MainViewModel extends BaseObservable
     private CreateGroupContract.Presenter mCreateGroupPresenter;
     private Restaurant mSelectedRestaurant;
     private Marker mMarkerNewGroup;
+    private Map<Group, Marker> mFloatingGroupsMarker;
     private Marker mMarkerFloating;
     private List<Category> mListCategories;
     private DrawerLayout mDrawerLayout;
@@ -540,6 +541,15 @@ public class MainViewModel extends BaseObservable
     }
 
     @Override
+    public void onCreateNewGroupSuccess(Group newGroup) {
+        Marker marker = mMap.addMarker(new MarkerOptions()
+            .position(new LatLng(newGroup.getLatitude(), newGroup.getLongtitude()))
+            .snippet(MARKER_GROUP)
+            .icon(mIconMarkerGroup));
+        mFloatingGroupsMarker.put(newGroup, marker);
+    }
+
+    @Override
     public void onClickCreateNewGroup() {
         setState(STATE_CREATE_GROUP);
         makeAllViewPointMarkerUndraggable();
@@ -567,8 +577,8 @@ public class MainViewModel extends BaseObservable
     }
 
     @Override
-    public void onGetNewGroupLocalSuccess(Group group) {
-// TODO: 04/08/2017  
+    public void onGetNewGroupLocalSuccess(Group newGroup) {
+        mPresenter.createNewGroup(newGroup);
     }
 
     @Override

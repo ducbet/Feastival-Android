@@ -21,6 +21,7 @@ public interface MainContract {
         void setMapFragment(SupportMapFragment mapFragment);
         void onGetRestaurantsSuccess(Marker viewPoint, RestaurantsResponse restaurantsResponse);
         void onGetCategoriesSuccess(CategoriesResponse categoriesResponse);
+        void onCreateNewGroupSuccess(Group newGroup);
         void onClickCreateNewGroup();
         void onClickExistGroup(Group group);
         void onGetGroupDetailSuccess(GroupDetailResponse groupDetailResponse);
@@ -40,5 +41,6 @@ public interface MainContract {
         void getCategories();
         double getDistance(LatLng latLngA, LatLng latLngB);
         void getGroupDetail(int groupId);
+        void createNewGroup(Group newGroup);
     }
 }

@@ -1,11 +1,13 @@
 package com.framgia.feastival.data.service;
 
 import com.framgia.feastival.data.source.model.CategoriesResponse;
+import com.framgia.feastival.data.source.model.Group;
 import com.framgia.feastival.data.source.model.GroupDetailResponse;
 import com.framgia.feastival.data.source.model.LoginResponse;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
 
 import io.reactivex.Observable;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -28,4 +30,7 @@ public interface FeastivalService {
     Observable<CategoriesResponse> getCategories();
     @GET("groups/{id}")
     Observable<GroupDetailResponse> getGroupDetail(@Path("id") int id);
+    @POST("groups")
+    Observable<Group> createNewGroup(@Body Group newGroup);
+    
 }
