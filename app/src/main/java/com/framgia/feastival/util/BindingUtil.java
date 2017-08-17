@@ -2,6 +2,8 @@ package com.framgia.feastival.util;
 
 import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
+import android.databinding.InverseBindingAdapter;
+import android.databinding.InverseBindingListener;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
@@ -9,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -94,5 +97,28 @@ public class BindingUtil {
             default:
                 break;
         }
+    }
+
+    @BindingAdapter(value = {"selectedValue", "selectedValueAttrChanged"}, requireAll = false)
+    public static void spinnerItemSelected(Spinner spinner, int selectedValue,
+                                           final InverseBindingListener changeSelectedValue) {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                changeSelectedValue.onChange();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+        if (changeSelectedValue != null) {
+            spinner.setSelection(selectedValue, true);
+        }
+    }
+
+    @InverseBindingAdapter(attribute = "selectedValue", event = "selectedValueAttrChanged")
+    public static int captureSelectedValue(Spinner spinner) {
+        return spinner.getSelectedItemPosition();
     }
 }

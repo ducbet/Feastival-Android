@@ -27,6 +27,7 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
     private String mAddress;
     private String mTime;
     private String mSize;
+    private int mSelectedCategory;
     private List<Category> mListCategories;
     private ArrayAdapter<String> mSpinnerAdapter;
 
@@ -130,6 +131,16 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
         setSpinnerAdapter();
     }
 
+    @Bindable
+    public int getSelectedCategory() {
+        return mSelectedCategory;
+    }
+
+    public void setSelectedCategory(int selectedCategory) {
+        mSelectedCategory = selectedCategory;
+        notifyPropertyChanged(BR.selectedCategory);
+    }
+
     @Override
     public void onCreateGroup() {
         mPresenter.checkValid(mName, mAddress, mTime, mSize);
@@ -150,6 +161,7 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
         newGroup.setLatitude(mSelectedRestaurant.getLatitude());
         newGroup.setLongtitude(mSelectedRestaurant.getLongtitude());
         newGroup.setSize(Integer.parseInt(mSize));
+        newGroup.setCategoryId(mListCategories.get(mSelectedCategory).getId());
         ((MainViewModel) mBaseViewModel).onGetNewGroupLocalSuccess(newGroup);
     }
 
