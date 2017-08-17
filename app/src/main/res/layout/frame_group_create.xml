@@ -200,8 +200,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/border"
+                    android:minHeight="@dimen/dp_50"
                     android:paddingBottom="@dimen/dp_15"
                     android:paddingTop="@dimen/dp_15"
+                    bind:selectedValue="@={viewModel.selectedCategory}"
                     bind:spinnerAdapter="@{viewModel.spinnerAdapter}"
                     >
                 </Spinner>
