@@ -30,6 +30,7 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
     private int mSelectedCategory;
     private List<Category> mListCategories;
     private ArrayAdapter<String> mSpinnerAdapter;
+    private boolean mVisibility;
 
     public CreateGroupViewModel(MainViewModel mainViewModel) {
         mBaseViewModel = mainViewModel;
@@ -139,6 +140,16 @@ public class CreateGroupViewModel extends BaseObservable implements CreateGroupC
     public void setSelectedCategory(int selectedCategory) {
         mSelectedCategory = selectedCategory;
         notifyPropertyChanged(BR.selectedCategory);
+    }
+
+    @Bindable
+    public boolean isVisibility() {
+        return mVisibility;
+    }
+
+    public void setVisibility(boolean visibility) {
+        mVisibility = visibility;
+        notifyPropertyChanged(BR.visibility);
     }
 
     @Override

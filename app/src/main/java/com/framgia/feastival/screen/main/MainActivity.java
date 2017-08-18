@@ -20,6 +20,10 @@ import com.framgia.feastival.data.source.remote.RestaurantRemoteDataSource;
 import com.framgia.feastival.databinding.ActivityMainBinding;
 import com.framgia.feastival.databinding.HeaderBinding;
 import com.framgia.feastival.screen.BaseActivity;
+import com.framgia.feastival.screen.main.creategroup.CreateGroupContract;
+import com.framgia.feastival.screen.main.creategroup.CreateGroupPresenter;
+import com.framgia.feastival.screen.main.creategroup.CreateGroupViewModel;
+import com.framgia.feastival.screen.main.restaurantdetail.RestaurantDetailViewModel;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import static com.framgia.feastival.screen.main.MainViewModel.STATE_SHOW_RESTAURANT_DETAIL;
@@ -32,6 +36,8 @@ public class MainActivity extends BaseActivity {
     private static final long EXIT_DELAY = 2000;
     private static int REQUEST_ACCESS_LOCATION = 123;
     private MainContract.ViewModel mViewModel;
+    private RestaurantDetailViewModel mRestaurantDetailViewModel;
+    private CreateGroupContract.ViewModel mCreateGroupViewModel;
     private static final String PERMISSION_GET_LOCATION[] =
         {Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -49,13 +55,31 @@ public class MainActivity extends BaseActivity {
         ActivityMainBinding binding =
             DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setViewModel((MainViewModel) mViewModel);
+        addHeaderNavigationView(binding);
+        inflateBottomSheetView(binding);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+            .findFragmentById(R.id.map);
+        mViewModel.setMapFragment(mapFragment);
+    }
+
+    private void inflateBottomSheetView(ActivityMainBinding binding) {
+        mRestaurantDetailViewModel = new RestaurantDetailViewModel((MainViewModel) mViewModel);
+        binding.setRestaurantViewModel(mRestaurantDetailViewModel);
+        ((MainViewModel) mViewModel).setRestaurantDetailViewModel(mRestaurantDetailViewModel);
+        mCreateGroupViewModel = new CreateGroupViewModel((MainViewModel) mViewModel);
+        CreateGroupContract.Presenter createGroupPresenter =
+            new CreateGroupPresenter(mCreateGroupViewModel);
+        mCreateGroupViewModel.setPresenter(createGroupPresenter);
+        binding.setCreateGroupViewModel((CreateGroupViewModel) mCreateGroupViewModel);
+        ((MainViewModel) mViewModel).setCreateGroupViewModel(
+            (CreateGroupViewModel) mCreateGroupViewModel);
+    }
+
+    private void addHeaderNavigationView(ActivityMainBinding binding) {
         HeaderBinding headerBinding = DataBindingUtil.inflate(
             getLayoutInflater(), R.layout.header, binding.leftDrawer, false);
         headerBinding.setViewModel((MainViewModel) mViewModel);
         ((MainViewModel) mViewModel).setNavigationView(binding.drawerLayout, binding.leftDrawer);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-            .findFragmentById(R.id.map);
-        mViewModel.setMapFragment(mapFragment);
     }
 
     public void requestPermission() {

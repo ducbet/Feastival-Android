@@ -16,6 +16,17 @@ public class RestaurantDetailViewModel extends BaseObservable {
     private Restaurant mSelectedRestaurant;
     private RestaurantsGroupsAdapter mRestaurantsGroupsAdapter;
     private int mState;
+    private boolean mVisibility;
+
+    @Bindable
+    public boolean isVisibility() {
+        return mVisibility;
+    }
+
+    public void setVisibility(boolean visibility) {
+        mVisibility = visibility;
+        notifyPropertyChanged(BR.visibility);
+    }
 
     @Bindable
     public int getState() {

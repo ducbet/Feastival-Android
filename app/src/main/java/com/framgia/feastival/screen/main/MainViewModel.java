@@ -28,10 +28,8 @@ import com.framgia.feastival.data.source.model.Restaurant;
 import com.framgia.feastival.data.source.model.RestaurantsResponse;
 import com.framgia.feastival.screen.BaseActivity;
 import com.framgia.feastival.screen.main.creategroup.CreateGroupContract;
-import com.framgia.feastival.screen.main.creategroup.CreateGroupPresenter;
 import com.framgia.feastival.screen.main.creategroup.CreateGroupViewModel;
 import com.framgia.feastival.screen.main.joingroup.JoinGroupContact;
-import com.framgia.feastival.screen.main.joingroup.JoinGroupPresenter;
 import com.framgia.feastival.screen.main.joingroup.JoinGroupViewModel;
 import com.framgia.feastival.screen.main.restaurantdetail.RestaurantDetailViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -102,10 +100,8 @@ public class MainViewModel extends BaseObservable
                 zoomInMyPositonAutomaticly();
             }
         };
-    private RestaurantDetailViewModel mRestaurantDetailViewModel =
-        new RestaurantDetailViewModel(this);
-    private CreateGroupViewModel mCreateGroupViewModel;
-    private CreateGroupContract.Presenter mCreateGroupPresenter;
+    private RestaurantDetailViewModel mRestaurantDetailViewModel;
+    private CreateGroupContract.ViewModel mCreateGroupViewModel;
     private Restaurant mSelectedRestaurant;
     private Marker mMarkerNewGroup;
     private Map<Group, Marker> mFloatingGroupsMarker;
@@ -116,12 +112,12 @@ public class MainViewModel extends BaseObservable
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
 
-    public RestaurantDetailViewModel getRestaurantDetailViewModel() {
-        return mRestaurantDetailViewModel;
+    public void setRestaurantDetailViewModel(RestaurantDetailViewModel restaurantDetailViewModel) {
+        mRestaurantDetailViewModel = restaurantDetailViewModel;
     }
 
-    public CreateGroupViewModel getCreateGroupViewModel() {
-        return mCreateGroupViewModel;
+    public void setCreateGroupViewModel(CreateGroupViewModel createGroupViewModel) {
+        mCreateGroupViewModel = createGroupViewModel;
     }
 
     public JoinGroupViewModel getmJoinGroupViewModel() {
@@ -133,13 +129,6 @@ public class MainViewModel extends BaseObservable
         mRestaurantsMarker = new HashMap<>();
         mGroupsMarker = new HashMap<>();
         mViewPointsMarker = new HashMap<>();
-        setState(STATE_SHOW_RESTAURANT_DETAIL);
-        mCreateGroupViewModel = new CreateGroupViewModel(this);
-        mCreateGroupPresenter = new CreateGroupPresenter(mCreateGroupViewModel);
-        mCreateGroupViewModel.setPresenter(mCreateGroupPresenter);
-        mJoinGroupViewModel = new JoinGroupViewModel(this);
-        mJoinGroupPresenter = new JoinGroupPresenter(mJoinGroupViewModel);
-        mJoinGroupViewModel.setPresenter(mJoinGroupPresenter);
         mListCategories = new ArrayList<>();
     }
 
@@ -165,12 +154,22 @@ public class MainViewModel extends BaseObservable
     }
 
     public void setState(String state) {
+        mRestaurantDetailViewModel.setVisibility(false);
+        ((CreateGroupViewModel) mCreateGroupViewModel).setVisibility(false);
         switch (state) {
             case STATE_SHOW_RESTAURANT_DETAIL:
+                mBottomSheet.getLayoutParams().height = mContext.getResources()
+                    .getInteger(R.integer.bottom_sheet_expand_restaurant_detail);
+                mBottomSheet.requestLayout();
+                mRestaurantDetailViewModel.setVisibility(true);
                 break;
             case STATE_SHOW_GROUP_DETAIL:
                 break;
             case STATE_CREATE_GROUP:
+                mBottomSheet.getLayoutParams().height = mContext.getResources()
+                    .getInteger(R.integer.bottom_sheet_expand_create_group);
+                mBottomSheet.requestLayout();
+                ((CreateGroupViewModel) mCreateGroupViewModel).setVisibility(true);
                 setBottomSheetState(BottomSheetBehavior.STATE_EXPANDED);
                 break;
             default:
@@ -428,7 +427,7 @@ public class MainViewModel extends BaseObservable
     public void setBottomSheetState(int state) {
         mBottomSheetBehavior.setState(state);
         mRestaurantDetailViewModel.setState(state);
-        mCreateGroupViewModel.setState(state);
+        ((CreateGroupViewModel) mCreateGroupViewModel).setState(state);
     }
 
     public Restaurant getSelectedRestaurant() {
@@ -436,8 +435,6 @@ public class MainViewModel extends BaseObservable
     }
 
     public void setSelectedRestaurant(Marker marker) {
-        mRestaurantDetailViewModel.setSelectedRestaurant(
-            (Restaurant) getKeyFromValue((HashMap) mRestaurantsMarker, marker));
         mSelectedRestaurant = (Restaurant) getKeyFromValue((HashMap) mRestaurantsMarker, marker);
         mRestaurantDetailViewModel.setSelectedRestaurant(mSelectedRestaurant);
         if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
@@ -479,11 +476,13 @@ public class MainViewModel extends BaseObservable
 
     private void passAddressIntoCreateGroupFrame(Marker marker) {
         if (marker.getSnippet().equals(MARKER_FLOATING)) {
-            mCreateGroupViewModel.setAddress(getAddress(marker.getPosition()));
+            ((CreateGroupViewModel) mCreateGroupViewModel)
+                .setAddress(getAddress(marker.getPosition()));
             return;
         }
         if (marker.getSnippet().contains(MARKER_RESTAURANT)) {
-            mCreateGroupViewModel.setSelectedRestaurant(mSelectedRestaurant);
+            ((CreateGroupViewModel) mCreateGroupViewModel)
+                .setSelectedRestaurant(mSelectedRestaurant);
             return;
         }
     }
@@ -512,6 +511,7 @@ public class MainViewModel extends BaseObservable
         mPresenter.getCategories();
         mNavigationView.setNavigationItemSelectedListener(this);
         createBottomSheet();
+        setState(STATE_SHOW_RESTAURANT_DETAIL);
     }
 
     @Override
@@ -550,7 +550,7 @@ public class MainViewModel extends BaseObservable
     public void onGetCategoriesSuccess(CategoriesResponse categoriesResponse) {
         mListCategories.clear();
         mListCategories.addAll(categoriesResponse.getCategories());
-        mCreateGroupViewModel.setListCategories(mListCategories);
+        ((CreateGroupViewModel) mCreateGroupViewModel).setListCategories(mListCategories);
     }
 
     @Override
