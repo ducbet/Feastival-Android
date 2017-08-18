@@ -3,6 +3,7 @@ package com.framgia.feastival.screen.main.joingroup;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
+import com.framgia.feastival.data.source.model.GroupDetailResponse;
 import com.framgia.feastival.screen.BaseViewModel;
 import com.framgia.feastival.screen.main.MainViewModel;
 
@@ -12,7 +13,7 @@ import com.framgia.feastival.screen.main.MainViewModel;
 public class JoinGroupViewModel extends BaseObservable implements JoinGroupContact.ViewModel {
     private BaseViewModel mBaseViewModel;
     private JoinGroupContact.Presenter mPresenter;
-    private String mNameGroup;
+    private GroupDetailResponse mGroupDetailResponse;
     private GroupMemberAdapter mGroupMemberAdapter;
 
     @Bindable
@@ -42,5 +43,10 @@ public class JoinGroupViewModel extends BaseObservable implements JoinGroupConta
     @Override
     public void setPresenter(JoinGroupContact.Presenter presenter) {
         mPresenter = presenter;
+    }
+
+    @Override
+    public void setGroupResponse(GroupDetailResponse groupDetailResponse) {
+        mGroupDetailResponse = groupDetailResponse;
     }
 }
