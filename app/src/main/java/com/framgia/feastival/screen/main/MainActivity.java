@@ -22,6 +22,8 @@ import com.framgia.feastival.databinding.HeaderBinding;
 import com.framgia.feastival.screen.BaseActivity;
 import com.google.android.gms.maps.SupportMapFragment;
 
+import static com.framgia.feastival.screen.main.MainViewModel.STATE_SHOW_RESTAURANT_DETAIL;
+
 /**
  * Main Screen.
  */
@@ -120,6 +122,10 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        if (((MainViewModel) mViewModel).getState() != STATE_SHOW_RESTAURANT_DETAIL) {
+            ((MainViewModel) mViewModel).setState(STATE_SHOW_RESTAURANT_DETAIL);
+            return;
+        }
         if (mIsDoubleClickedBack) {
             super.onBackPressed();
             return;

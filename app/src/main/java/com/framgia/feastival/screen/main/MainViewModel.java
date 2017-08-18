@@ -576,12 +576,17 @@ public class MainViewModel extends BaseObservable
 
     @Override
     public void onClickExistGroup(Group group) {
-        // TODO: 06/08/2017
+        mPresenter.getGroupDetail(group.getId());
     }
 
     @Override
-    public void onGetGroupDetailSuccess(
-        GroupDetailResponse groupDetailResponse) { // TODO: 06/08/2017
+    public void onGetGroupDetailSuccess(GroupDetailResponse groupDetailResponse) {
+        if (groupDetailResponse.getGroupUser() == null) {
+            setState(STATE_JOIN_GROUP);
+            mJoinGroupViewModel.setGroupResponse(groupDetailResponse);
+            return;
+        }
+        setState(STATE_SHOW_GROUP_DETAIL);
     }
 
     @Override

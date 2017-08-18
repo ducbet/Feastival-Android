@@ -65,8 +65,8 @@ public class BindingUtil {
         switch (mainViewModel.getState()) {
             case STATE_SHOW_RESTAURANT_DETAIL:
                 FrameRestaurantDetailBinding restaurantDetailBinding =
-                    DataBindingUtil.inflate(layoutInflater, R.layout
-                        .frame_restaurant_detail, rootCoordinate, false);
+                    DataBindingUtil.inflate(layoutInflater,
+                        R.layout.frame_restaurant_detail, rootCoordinate, false);
                 restaurantDetailBinding.setViewModel(mainViewModel.getRestaurantDetailViewModel());
                 mView = restaurantDetailBinding.getRoot();
                 bottomSheet.getLayoutParams().height = mainViewModel.getContext().getResources()
@@ -78,8 +78,8 @@ public class BindingUtil {
                 break;
             case STATE_CREATE_GROUP:
                 FrameGroupCreateBinding createGroupBinding =
-                    DataBindingUtil.inflate(layoutInflater, R.layout
-                        .frame_group_create, rootCoordinate, false);
+                    DataBindingUtil.inflate(layoutInflater, R.layout.frame_group_create,
+                        rootCoordinate, false);
                 createGroupBinding.setViewModel(mainViewModel.getCreateGroupViewModel());
                 mView = createGroupBinding.getRoot();
                 bottomSheet.getLayoutParams().height = mainViewModel.getContext().getResources()
@@ -90,9 +90,8 @@ public class BindingUtil {
                 rootCoordinate.addView(mView, mParams);
                 break;
             case STATE_JOIN_GROUP:
-                FrameGroupJoinBinding groupJoinBinding =
-                    DataBindingUtil.inflate(layoutInflater, R.layout
-                        .frame_group_create, rootCoordinate, false);
+                FrameGroupJoinBinding groupJoinBinding = DataBindingUtil
+                    .inflate(layoutInflater, R.layout.frame_group_join, rootCoordinate, false);
                 groupJoinBinding.setViewModel(mainViewModel.getmJoinGroupViewModel());
                 mView = groupJoinBinding.getRoot();
                 bottomSheet.getLayoutParams().height = mainViewModel.getContext().getResources()

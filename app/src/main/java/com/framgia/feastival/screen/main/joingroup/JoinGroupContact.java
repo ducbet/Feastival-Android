@@ -1,5 +1,6 @@
 package com.framgia.feastival.screen.main.joingroup;
 
+import com.framgia.feastival.data.source.model.GroupDetailResponse;
 import com.framgia.feastival.screen.BasePresenter;
 import com.framgia.feastival.screen.BaseViewModel;
 
@@ -12,6 +13,7 @@ public class JoinGroupContact {
      */
     interface ViewModel extends BaseViewModel<Presenter> {
         void onJoinGroup();
+        void setGroupResponse(GroupDetailResponse groupDetailResponse);
     }
 
     /**
